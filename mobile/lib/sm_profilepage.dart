@@ -251,17 +251,18 @@ class _SMProfilePageState extends State<SMProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "RenoveteryX",
           style: TextStyle(
             fontFamily: 'OpenSans',
+            color: Color.fromARGB(255, 61, 62, 63),
           ),
         ),
-        backgroundColor:Color.fromARGB(255, 248, 204, 57),
+        backgroundColor: const Color.fromARGB(255, 255, 208, 0),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.arrow_back), // Add a back button icon
+              icon: const Icon(Icons.arrow_back), // Add a back button icon
               onPressed: () {
                 // Navigate back to the previous screen when the button is pressed
                 Navigator.pop(context);
@@ -273,21 +274,35 @@ class _SMProfilePageState extends State<SMProfilePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 168, 168, 168),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10.0),
-                bottomRight: Radius.circular(10.0),
-              ),
-            ),
-            child: Text(
-              'My Profile',
-              style: TextStyle(
-                fontSize: 28.0,
-                fontWeight: FontWeight.bold,
-              ),
+          const SizedBox(height: 30.0),
+          Align(
+            alignment:
+                Alignment.topCenter, // Align the container to the top center
+            child: Column(
+              children: [
+                Container(
+                  width: 100.0,
+                  height: 100.0,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color.fromARGB(255, 87, 136, 177),
+                  ),
+                  child: Center(
+                    child: Text(
+                      managerNameController.text.isNotEmpty ? managerNameController.text[0] : '',
+                      style: TextStyle(fontSize: 38.0,color: Colors.white,fontWeight: FontWeight.bold,),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15.0),
+                Text(
+                  managerNameController.text,
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -339,7 +354,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
                     ),
                     buildEditableField(
                       siteNameController,
-                      'Site Name',
+                      'Site Address',
                       siteNameEditMode,
                       () {
                         setState(() {
@@ -357,7 +372,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
                         });
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    SizedBox(height: 37.0),
                   ],
                 ),
               ),
@@ -368,9 +383,10 @@ class _SMProfilePageState extends State<SMProfilePage> {
     );
   }
 
-  Widget buildEditableField(TextEditingController controller, String labelText, bool isEditMode, VoidCallback onEditPressed) {
+  Widget buildEditableField(TextEditingController controller, String labelText,
+      bool isEditMode, VoidCallback onEditPressed) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.only(top: 3.0, bottom: 0.0, left: 20.0, right: 20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -385,7 +401,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
                 ),
               ),
               IconButton(
-                icon: Icon(isEditMode ? Icons.done : Icons.edit),
+                icon: Icon(isEditMode ? Icons.done : Icons.edit, color: Color.fromARGB(255, 48, 70, 88),),
                 onPressed: () {
                   onEditPressed();
                   if (isEditMode) {
@@ -399,6 +415,8 @@ class _SMProfilePageState extends State<SMProfilePage> {
             ],
           ),
           Container(
+            width: 360.0, // Set the desired width
+            height: 45.0, // Set the desired height
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
               color: Colors.white,
