@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:searchbar_animation/searchbar_animation.dart';
 
 class SMHomePage extends StatefulWidget {
   const SMHomePage({Key? key}) : super(key: key);
@@ -24,17 +25,18 @@ class _SMHomePageState extends State<SMHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "RenoveteryX",
           style: TextStyle(
             fontFamily: 'OpenSans',
+            color: Color.fromARGB(255, 61, 62, 63),
           ),
         ),
-        backgroundColor:Color.fromARGB(255, 255, 208, 0),
+        backgroundColor: const Color.fromARGB(255, 255, 208, 0),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.arrow_back), // Add a back button icon
+              icon: const Icon(Icons.arrow_back), // Add a back button icon
               onPressed: () {
                 // Navigate back to the previous screen when the button is pressed
                 Navigator.pop(context);
@@ -48,76 +50,88 @@ class _SMHomePageState extends State<SMHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 10.0),
             Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Color(0xffd9d9d9),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Text(
-                'Items',
-                style: TextStyle(
-                  fontFamily: 'Open Sans',
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.68,
-                  color: Color(0xff000000),
+                gradient: const LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color.fromARGB(199, 158, 158, 158),
+                    Color.fromARGB(136, 96, 125, 139)
+                  ], // Define your gradient colors
                 ),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            Container(
-              padding: EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Color(0xffffffff),
                 borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x3f000000),
-                    offset: Offset(5.0, 4.0),
-                    blurRadius: 2.0,
-                  ),
-                ],
               ),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment
+                    .stretch, // Stretch the children to full width
                 children: [
-                  Icon(Icons.search),
-                  SizedBox(width: 10.0),
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search an item',
-                        border: InputBorder.none,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(width: 20.0),
+                      const Text(
+                        'Welcome',
+                        style: TextStyle(
+                          fontFamily: 'Open Sans',
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.68,
+                          color: Color(0xff000000),
+                        ),
                       ),
-                    ),
+                      const SizedBox(
+                          width: 12.0), // Add spacing between text and image
+                      Image.asset(
+                        "assets/welcome_img.png", // Replace with the path to your PNG image
+                        width: 180.0, // Set the desired width of the image
+                        height: 120.0, // Set the desired height of the image
+                        scale: 0.1,
+                      ),
+                    ],
+                  ),
+                  SearchBarAnimation(
+                    textEditingController: _searchController,
+                    isOriginalAnimation: false,
+                    trailingWidget: const Icon(Icons.search),
+                    secondaryButtonWidget: const Icon(Icons.cancel,color: Color.fromARGB(255, 100, 147, 170),),
+                    buttonWidget: const Icon(Icons.search),
+                    searchBoxWidth: 340.0,
+                    onFieldSubmitted: (String value) {
+                      debugPrint('onFieldSubmitted value $value');
+                    },
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Expanded(
               child: ListView.builder(
+                shrinkWrap: true,
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    margin: EdgeInsets.symmetric(vertical: 8.0),
-                    padding: EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                    padding: const EdgeInsets.all(16.0),
+                    height: 50.0, // Set the desired height
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(10.0),
-                      boxShadow: [
+                      borderRadius: BorderRadius.circular(
+                          10.0), // Increase the corner radius
+                      boxShadow: const [
                         BoxShadow(
-                          color: Color(0x3f000000),
-                          offset: Offset(0.0, 2.0),
-                          blurRadius: 4.0,
+                          color: Color(0x5f000000), // Increase shadow opacity
+                          offset: Offset(0.0, 4.0), // Increase shadow offset
+                          blurRadius: 12.0, // Increase shadow blur radius
                         ),
                       ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(items[index], style: TextStyle(fontSize: 16.0)),
+                        Text(items[index], style: const TextStyle(fontSize: 16.0)),
                         Checkbox(
                           value: selectedItems[index],
                           onChanged: (value) {
@@ -132,22 +146,30 @@ class _SMHomePageState extends State<SMHomePage> {
                 },
               ),
             ),
+            Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 14.0), 
+                  SizedBox(
+                    width: 150.0,
+                    height:50.0, 
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        // Add to cart functionality here
+                      },
+                      backgroundColor: Color.fromARGB(255, 90, 121, 141),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      child: const Text('Add to Cart',style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold,),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20.0),
+                ],
+              ),
+            )
           ],
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: () {
-            // Add to cart functionality here
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.yellow, // Set the background color to yellow
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-          ),
-          child: Text('Add to Cart'),
         ),
       ),
     );
