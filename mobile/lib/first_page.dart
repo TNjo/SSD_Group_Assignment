@@ -47,6 +47,7 @@ class FirstPage extends StatelessWidget {
                 height: 1.8,
                 letterSpacing: 2.24,
                 color: const Color.fromARGB(255, 255, 255, 255),
+                decoration: TextDecoration.none,
               ),
             ),
           ),
@@ -83,7 +84,7 @@ class FirstPage extends StatelessWidget {
                 //SignUp Btn
                 ElevatedButton(
                   onPressed: () {
-                    // Add your button 1 functionality here
+                    Navigator.of(context).pushNamed('/signup');
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(

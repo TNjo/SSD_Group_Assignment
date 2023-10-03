@@ -4,6 +4,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:mobile/first_page.dart';
 import 'package:mobile/login_page.dart';
 import 'package:mobile/components/sm_navbar.dart';
+import 'package:mobile/signup_page.dart';
 import 'package:mobile/sm_cartpage.dart';
 import 'package:mobile/sm_homepage.dart';
 import 'package:mobile/sm_orderspage.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       home: FirstPage(), // Set the initial screen to Screen1.
       routes: <String, WidgetBuilder>{
         '/login':(context) => LoginPage(),
+        '/signup':(context) => SignupPage(),
         '/sm_navbar':(context) => SMNavBar(),
         '/sm_home':(context) => SMHomePage(),
         '/sm_profile':(context) => SMProfilePage(),

@@ -252,7 +252,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "RenoveteryX",
+          "My Profile",
           style: TextStyle(
             fontFamily: 'OpenSans',
             color: Color.fromARGB(255, 61, 62, 63),
