@@ -205,12 +205,12 @@
 
 import 'package:flutter/material.dart';
 
-class MyProfilePage extends StatefulWidget {
+class SMProfilePage extends StatefulWidget {
   @override
-  _MyProfilePageState createState() => _MyProfilePageState();
+  _SMProfilePageState createState() => _SMProfilePageState();
 }
 
-class _MyProfilePageState extends State<MyProfilePage> {
+class _SMProfilePageState extends State<SMProfilePage> {
   // Define variables to hold user details
   String managerName = 'John Doe'; // Example initial values
   String email = 'johndoe@example.com';
@@ -251,8 +251,24 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.yellow,
-        title: Text('My Profile'),
+        title: Text(
+          "RenoveteryX",
+          style: TextStyle(
+            fontFamily: 'OpenSans',
+          ),
+        ),
+        backgroundColor:Color.fromARGB(255, 248, 204, 57),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.arrow_back), // Add a back button icon
+              onPressed: () {
+                // Navigate back to the previous screen when the button is pressed
+                Navigator.pop(context);
+              },
+            );
+          },
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
