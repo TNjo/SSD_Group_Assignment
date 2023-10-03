@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class SmHomePage extends StatefulWidget {
-  const SmHomePage({Key? key}) : super(key: key);
+class SMHomePage extends StatefulWidget {
+  const SMHomePage({Key? key}) : super(key: key);
 
   @override
-  State<SmHomePage> createState() => _SmHomePageState();
+  State<SMHomePage> createState() => _SMHomePageState();
 }
 
-class _SmHomePageState extends State<SmHomePage> {
+class _SMHomePageState extends State<SMHomePage> {
   final TextEditingController _searchController = TextEditingController();
   List<String> items = [
     'Cement',
@@ -24,8 +24,24 @@ class _SmHomePageState extends State<SmHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.yellow,
-        title: Text("RenoveteryX"),
+        title: Text(
+          "RenoveteryX",
+          style: TextStyle(
+            fontFamily: 'OpenSans',
+          ),
+        ),
+        backgroundColor:Color.fromARGB(255, 255, 208, 0),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.arrow_back), // Add a back button icon
+              onPressed: () {
+                // Navigate back to the previous screen when the button is pressed
+                Navigator.pop(context);
+              },
+            );
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

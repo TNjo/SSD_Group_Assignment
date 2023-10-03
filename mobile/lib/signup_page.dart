@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
+  String selectedOption = "Site Manager"; // Default selected option
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,8 +51,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 gradient: LinearGradient(
                   colors: [
-                    Color.fromARGB(144, 0, 0, 0), 
-                    Color.fromARGB(158, 237, 190, 21).withOpacity(1.0),
+                    const Color.fromARGB(144, 0, 0, 0),
+                    const Color.fromARGB(158, 237, 190, 21).withOpacity(1.0),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -58,14 +60,14 @@ class _LoginPageState extends State<LoginPage> {
                 // color: const Color.fromARGB(1, 237, 189, 21)
                 //     .withOpacity(0.7), // Background color of the small box
               ),
-              height: 330, // Adjust the height as needed
+              height: 470, // Adjust the height as needed
               width: double.infinity,
               child: Column(
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(top: 30.0),
                     child: Text(
-                      "Login",
+                      "Sign Up",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24.0,
@@ -74,18 +76,70 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  // Email Field
                   SizedBox(height: 30.0),
+
+                  //User Option
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center, // Center the buttons horizontally
+                    children: [
+
+                    //Site Manager
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedOption = "Site Manager"; // Update the selected option
+                          });
+                        },
+                        child: Text(
+                          "Site Manager",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: selectedOption == "Site Manager"
+                                ? const Color.fromARGB(255, 255, 208, 0) // Change this color to your desired color
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 50.0), 
+
+                    //Supplier
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedOption =
+                                "Supplier"; // Update the selected option
+                          });
+                        },
+                        child: Text(
+                          "Supplier",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: selectedOption == "Supplier"
+                                ? const Color.fromARGB(255, 255, 208, 0) // Change this color to your desired color
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Email Field
+                  const SizedBox(height: 20.0),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Container(
+
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                             10.0), // Set the corner radius here
-                        color: Color.fromARGB(190, 217, 217, 217),
+                        color: const Color.fromARGB(190, 217, 217, 217),
                       ),
+
                       child: TextFormField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: "Email",
                           labelStyle: TextStyle(
                             color: Color.fromARGB(200, 0, 0, 0),
@@ -95,24 +149,56 @@ class _LoginPageState extends State<LoginPage> {
                           border: InputBorder.none, // Remove the default border
                           filled: true,
                         ),
-                        cursorColor: Color.fromARGB(211, 0, 0, 0),
+                        cursorColor: const Color.fromARGB(211, 0, 0, 0),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 20.0),
+
+                  // Password Field
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Container(
+
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                            10.0), // Set the corner radius here
+                        color: const Color.fromARGB(225, 217, 217, 217),
+                      ),
+
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                          labelStyle: TextStyle(
+                            color: Color.fromARGB(200, 0, 0, 0),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 15.0),
+                          border: InputBorder.none, // Remove the default border
+                          filled: true,
+                        ),
+                        cursorColor: const Color.fromARGB(211, 0, 0, 0),
                       ),
                     ),
                   ),
 
-                  // Password Field
                   const SizedBox(height: 20.0),
+
+                  // Re-enter Password Field
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Container(
+                      
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                             10.0), // Set the corner radius here
-                        color: Color.fromARGB(225, 217, 217, 217),
+                        color: const Color.fromARGB(225, 217, 217, 217),
                       ),
+
                       child: TextFormField(
                         decoration: const InputDecoration(
-                          labelText: "Password",
+                          labelText: "Re-enter Password",
                           labelStyle: TextStyle(
                             color: Color.fromARGB(200, 0, 0, 0),
                           ),
@@ -143,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                       minimumSize: MaterialStateProperty.all<Size>(
                           const Size(114, 45)), // Set custom button size here
                     ),
-                    child: const Text("Login"),
+                    child: const Text("Sign up"),
                   ),
                 ],
               ),
