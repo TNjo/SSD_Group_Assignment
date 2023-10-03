@@ -93,6 +93,8 @@ class _SMHomePageState extends State<SMHomePage> {
                     ],
                   ),
                   SearchBarAnimation(
+                    enableButtonBorder: true,
+                    buttonBorderColour: Color.fromARGB(255, 48, 116, 161),
                     textEditingController: _searchController,
                     isOriginalAnimation: false,
                     trailingWidget: const Icon(Icons.search),
