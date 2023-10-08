@@ -9,7 +9,9 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   String selectedOption = "Site Manager"; // Default selected option
-
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
