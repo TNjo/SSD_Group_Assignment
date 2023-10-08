@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 
+import 'package:mobile/components/sp_navbar.dart';
+import 'package:mobile/components/sm_navbar.dart';
+
 import 'package:mobile/first_page.dart';
 import 'package:mobile/login_page.dart';
-import 'package:mobile/components/sm_navbar.dart';
 import 'package:mobile/signup_page.dart';
+
 import 'package:mobile/sm_cartpage.dart';
 import 'package:mobile/sm_homepage.dart';
 import 'package:mobile/sm_orderspage.dart';
@@ -31,6 +34,8 @@ class MyApp extends StatelessWidget {
         '/sm_profile':(context) => SMProfilePage(),
         '/sm_cart':(context) => SMCartPage(),
         '/sm_orders':(context) => SMOrdersPage(),
+
+        '/sp_navbar':(context) => SPNavBar()
       },
   );
   }
