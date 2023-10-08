@@ -86,12 +86,12 @@ class _SignupPageState extends State<SignupPage> {
                     mainAxisAlignment: MainAxisAlignment
                         .center, // Center the buttons horizontally
                     children: [
-
-                    //Site Manager
+                      //Site Manager
                       TextButton(
                         onPressed: () {
                           setState(() {
-                            selectedOption = "Site Manager"; // Update the selected option
+                            selectedOption =
+                                "Site Manager"; // Update the selected option
                           });
                           Navigator.of(context).pushNamed('/sm_navbar');
                         },
@@ -101,22 +101,24 @@ class _SignupPageState extends State<SignupPage> {
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
                             color: selectedOption == "Site Manager"
-                                ? const Color.fromARGB(255, 255, 208, 0) // Change this color to your desired color
+                                ? const Color.fromARGB(255, 255, 208,
+                                    0) // Change this color to your desired color
                                 : Colors.white,
                           ),
                         ),
                       ),
 
-                      const SizedBox(width: 50.0), 
+                      const SizedBox(width: 50.0),
 
-                    //Supplier
+                      //Supplier
                       TextButton(
                         onPressed: () {
                           setState(() {
                             selectedOption =
                                 "Supplier"; // Update the selected option
                           });
-                          Navigator.pushNamed(context, '/sp_navbar', arguments: 1);
+                          Navigator.pushNamed(context, '/sp_navbar',
+                              arguments: 1);
                         },
                         child: Text(
                           "Supplier",
@@ -124,7 +126,8 @@ class _SignupPageState extends State<SignupPage> {
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
                             color: selectedOption == "Supplier"
-                                ? const Color.fromARGB(255, 255, 208, 0) // Change this color to your desired color
+                                ? const Color.fromARGB(255, 255, 208,
+                                    0) // Change this color to your desired color
                                 : Colors.white,
                           ),
                         ),
@@ -136,13 +139,11 @@ class _SignupPageState extends State<SignupPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Container(
-
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                             10.0), // Set the corner radius here
                         color: const Color.fromARGB(190, 217, 217, 217),
                       ),
-
                       child: TextFormField(
                         controller: emailController,
                         decoration: const InputDecoration(
@@ -159,20 +160,18 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20.0),
 
                   // Password Field
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Container(
-
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                             10.0), // Set the corner radius here
                         color: const Color.fromARGB(225, 217, 217, 217),
                       ),
-
                       child: TextFormField(
                         controller: passwordController,
                         decoration: const InputDecoration(
@@ -196,13 +195,11 @@ class _SignupPageState extends State<SignupPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Container(
-                      
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                             10.0), // Set the corner radius here
                         color: const Color.fromARGB(225, 217, 217, 217),
                       ),
-
                       child: TextFormField(
                         controller: reEnterPasswordController,
                         decoration: const InputDecoration(
@@ -223,8 +220,30 @@ class _SignupPageState extends State<SignupPage> {
                   //Login Btn
                   const SizedBox(height: 25.0),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/login');
+                    onPressed: () async {
+                      try {
+                        final String email = emailController.text;
+                        final String password = passwordController.text;
+
+                        // Create a new user account using email and password
+                        await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                          email: email,
+                          password: password,
+                        );
+
+                        // After successful sign-up, you can add additional actions here if needed.
+                        // For example, you can navigate to a different screen:
+                        // Navigator.of(context).pushNamed('/login');
+
+                        // Clear the text fields after successful sign-up
+                        emailController.clear();
+                        passwordController.clear();
+                        reEnterPasswordController.clear();
+                      } catch (e) {
+                        // Handle sign-up errors (e.g., email is already in use)
+                        print('Error during sign-up: $e');
+                      }
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
