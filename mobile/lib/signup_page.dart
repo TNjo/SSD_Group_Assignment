@@ -11,7 +11,8 @@ class _SignupPageState extends State<SignupPage> {
   String selectedOption = "Site Manager"; // Default selected option
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  
+  TextEditingController reEnterPasswordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,6 +144,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
 
                       child: TextFormField(
+                        controller: emailController,
                         decoration: const InputDecoration(
                           labelText: "Email",
                           labelStyle: TextStyle(
@@ -172,6 +174,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
 
                       child: TextFormField(
+                        controller: passwordController,
                         decoration: const InputDecoration(
                           labelText: "Password",
                           labelStyle: TextStyle(
@@ -201,6 +204,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
 
                       child: TextFormField(
+                        controller: reEnterPasswordController,
                         decoration: const InputDecoration(
                           labelText: "Re-enter Password",
                           labelStyle: TextStyle(
