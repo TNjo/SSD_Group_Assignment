@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -94,7 +95,7 @@ class _SignupPageState extends State<SignupPage> {
                             selectedOption =
                                 "Site Manager"; // Update the selected option
                           });
-                          Navigator.of(context).pushNamed('/sm_navbar');
+                         // Navigator.of(context).pushNamed('/sm_navbar');
                         },
                         child: Text(
                           "Site Manager",
@@ -118,8 +119,7 @@ class _SignupPageState extends State<SignupPage> {
                             selectedOption =
                                 "Supplier"; // Update the selected option
                           });
-                          Navigator.pushNamed(context, '/sp_navbar',
-                              arguments: 1);
+                        // Navigator.pushNamed(context, '/sp_navbar',arguments: 1);
                         },
                         child: Text(
                           "Supplier",
@@ -227,15 +227,33 @@ class _SignupPageState extends State<SignupPage> {
                         final String password = passwordController.text;
 
                         // Create a new user account using email and password
-                        await FirebaseAuth.instance
+                        UserCredential userCredential = await FirebaseAuth
+                            .instance
                             .createUserWithEmailAndPassword(
                           email: email,
                           password: password,
                         );
 
-                        // After successful sign-up, you can add additional actions here if needed.
-                        // For example, you can navigate to a different screen:
-                        // Navigator.of(context).pushNamed('/login');
+                        // Determine the user's role (site_manager or supplier)
+                        String userRole = selectedOption == "Site Manager"
+                            ? "site_manager"
+                            : "supplier";
+
+                        // Set custom claims on the user (server-side code is needed)
+                        // admin.auth().setCustomUserClaims(userCredential.user.uid, { role: userRole });
+
+                        // Store user data in the Firebase Database (Firestore example)
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userCredential.user?.uid)
+                            .set({
+                          'email': email,
+                          'role': userRole,
+                          // Add other user data fields here...
+                        });
+
+                        // After successful sign-up, you can navigate to a different screen:
+                        Navigator.of(context).pushNamed('/login');
 
                         // Clear the text fields after successful sign-up
                         emailController.clear();
