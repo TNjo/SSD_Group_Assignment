@@ -90,6 +90,7 @@ class _SignupPageState extends State<SignupPage> {
                           setState(() {
                             selectedOption = "Site Manager"; // Update the selected option
                           });
+                          Navigator.of(context).pushNamed('/sm_navbar');
                         },
                         child: Text(
                           "Site Manager",
@@ -112,6 +113,7 @@ class _SignupPageState extends State<SignupPage> {
                             selectedOption =
                                 "Supplier"; // Update the selected option
                           });
+                          Navigator.pushNamed(context, '/sp_navbar', arguments: 1);
                         },
                         child: Text(
                           "Supplier",
