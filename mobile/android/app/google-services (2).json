@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "627858556749",
+    "project_id": "csse-53",
+    "storage_bucket": "csse-53.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627858556749:android:94fa0cb323c8b46f8d1904",
+        "android_client_info": {
+          "package_name": "com.example.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCs1O7UHs5B_ObQee7HAWZvhygcEyUblyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
