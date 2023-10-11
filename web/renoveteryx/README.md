@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+# React-Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![licence](https://img.shields.io/badge/licence-MIT-blue)
 
-## Available Scripts
+React Dashboard is an admin template dashboard based on React.
 
-In the project directory, you can run:
+![React-Dashboard](https://user-images.githubusercontent.com/32510139/181506432-dd67d4cc-31ae-40d6-8415-29b111e247b5.gif)
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Table of Contents
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+- [Run Locally](#run-locally)
+- [Deployment](#deployment)
+- [File Structure](#file-structure)
+- [Author](#author)
+- [License](#license)
 
-### `npm test`
+## Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Frontend:** HTML5 / CSS3 / ReactJS
 
-### `npm run build`
+## Quick start
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Clone the repo
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+  git clone https://github.com/blaiti/React-Dashboard
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Install React-Dashboard with npm
 
-### `npm run eject`
+```bash
+  cd React-Dashboard
+  npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Run Locally
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+To run locally, run the following command
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+  npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Deployment
 
-## Learn More
+To create a production build
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+  npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## File Structure
 
-### Code Splitting
+Within the download you'll find the following directories and files:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+React-Dashboard
+.
+├── package.json
+├── package_lock.json
+├── public
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── manifest.json
+│   └── robots.txt
+└── src
+    ├── App.css
+    ├── App.jsx
+    ├── index.css
+    ├── index.jsx
+    ├── assets
+    │   ├── icons
+    │   │   ├── cancel.svg
+    │   │   ├── dashboard.svg
+    │   │   ├── done.svg
+    │   │   ├── logout.svg
+    │   │   ├── notification.svg
+    │   │   ├── product.svg
+    │   │   ├── refunded.svg
+    │   │   ├── settings.svg
+    │   │   ├── shipping.svg
+    │   │   └── user.svg
+    │   └── images
+    │       └── white-logo.png
+    ├── components
+    │   ├── DashboardHeader
+    │   │   ├── index.jsx
+    │   │   └── styles.css
+    │   └── SideBar
+    │       ├── index.jsx
+    │       ├── sidebar-item.jsx
+    │       └── styles.css
+    ├── constants
+    │   ├── orders.js
+    │   └── sidebar-menu.js
+    ├── pages
+    │   ├── Orders
+    │   │   └── index.jsx
+    │   └── styles.css
+    └── utils
+        └── table-pagination.js
+```
 
-### Analyzing the Bundle Size
+## Author
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- [@blaiti](https://github.com/blaiti)
 
-### Making a Progressive Web App
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[MIT](https://github.com/blaiti/React-Dashboard/blob/main/LICENSE)
