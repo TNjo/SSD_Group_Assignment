@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-
+import { getAuth, signOut } from "firebase/auth";
 import SideBarItem from "./sidebar-item";
 
 import "./styles.css";
@@ -11,6 +11,17 @@ function SideBar({ menu }) {
   const location = useLocation();
 
   const [active, setActive] = useState(1);
+
+  const auth = getAuth();
+  async function handleLogout() {
+    await signOut(auth)
+      .then(() => {
+        console.log("User signed out");
+      })
+      .catch((error) => {
+        console.error("Error: " + error);
+      });
+  }
 
   useEffect(() => {
     menu.forEach((element) => {
@@ -44,11 +55,14 @@ function SideBar({ menu }) {
           </div>
 
           <div className="sidebar-footer">
-            <span className="sidebar-item-label">Logout</span>
+            <span className="sidebar-item-label" onClick={handleLogout}>
+              Logout
+            </span>
             <img
               src={LogoutIcon}
               alt="icon-logout"
               className="sidebar-item-icon"
+              onClick={handleLogout}
             />
           </div>
         </div>
