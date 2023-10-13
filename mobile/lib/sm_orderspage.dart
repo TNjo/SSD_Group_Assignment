@@ -3,6 +3,10 @@ import 'package:mobile/components/sm_pendingcard.dart';
 import 'package:mobile/components/sm_recievedcard.dart';
 
 class SMOrdersPage extends StatefulWidget {
+  final Map<String, dynamic> userData; // Add this line
+
+  SMOrdersPage({required this.userData, Key? key}) : super(key: key);
+
   @override
   _SMOrdersPageState createState() => _SMOrdersPageState();
 }

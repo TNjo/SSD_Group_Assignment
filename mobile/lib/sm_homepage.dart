@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/sm_cartpage.dart';
 import 'package:searchbar_animation/searchbar_animation.dart';
 
 class SMHomePage extends StatefulWidget {
-  const SMHomePage({Key? key}) : super(key: key);
+  final Map<String, dynamic> userData; // Add this line
 
+  SMHomePage({required this.userData, Key? key}) : super(key: key);
+  
   @override
   State<SMHomePage> createState() => _SMHomePageState();
 }
@@ -18,11 +21,11 @@ class _SMHomePageState extends State<SMHomePage> {
     'Wires',
     'Pipes',
   ];
-
+  List<String> selectedItemsList = [];
   List<bool> selectedItems = List.generate(6, (index) => false);
-
   @override
   Widget build(BuildContext context) {
+    // print("UserData: ${widget.userData}");
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -98,7 +101,10 @@ class _SMHomePageState extends State<SMHomePage> {
                     textEditingController: _searchController,
                     isOriginalAnimation: false,
                     trailingWidget: const Icon(Icons.search),
-                    secondaryButtonWidget: const Icon(Icons.cancel,color: Color.fromARGB(255, 100, 147, 170),),
+                    secondaryButtonWidget: const Icon(
+                      Icons.cancel,
+                      color: Color.fromARGB(255, 100, 147, 170),
+                    ),
                     buttonWidget: const Icon(Icons.search),
                     searchBoxWidth: 340.0,
                     onFieldSubmitted: (String value) {
@@ -115,7 +121,8 @@ class _SMHomePageState extends State<SMHomePage> {
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 12.0),
                     padding: const EdgeInsets.all(16.0),
                     height: 50.0, // Set the desired height
                     decoration: BoxDecoration(
@@ -133,7 +140,8 @@ class _SMHomePageState extends State<SMHomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(items[index], style: const TextStyle(fontSize: 16.0)),
+                        Text(items[index],
+                            style: const TextStyle(fontSize: 16.0)),
                         Checkbox(
                           value: selectedItems[index],
                           onChanged: (value) {
@@ -151,26 +159,47 @@ class _SMHomePageState extends State<SMHomePage> {
             Center(
               child: Column(
                 children: [
-                  const SizedBox(height: 14.0), 
+                  const SizedBox(height: 14.0),
                   SizedBox(
                     width: 150.0,
-                    height:50.0, 
+                    height: 50.0,
                     child: FloatingActionButton(
                       onPressed: () {
-                        // Add to cart functionality here
+                        // Create a list of selected item names
+                        List<String> selectedNames = [];
+                        for (int i = 0; i < selectedItems.length; i++) {
+                          if (selectedItems[i]) {
+                            selectedNames.add(items[i]);
+                          }
+                        }
+
+                       // Pass selected items to the cart page.
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SMCartPage(
+                                selectedItems: selectedNames,
+                                userData: widget.userData),
+                          ),
+                        );
                       },
                       backgroundColor: Color.fromARGB(255, 90, 121, 141),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      child: const Text('Add to Cart',style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold,),
+                      child: const Text(
+                        'Add to Cart',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20.0),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
