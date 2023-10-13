@@ -9,7 +9,8 @@ import {
 
 import SideBar from "./components/Sidebar";
 import sidebar_menu from "./constants/sidebar-menu";
-
+import firebase from "firebase/app";
+import "firebase/auth";
 import "./App.css";
 import Orders from "./pages/Orders";
 import Login from "./routes/Login";
@@ -17,6 +18,7 @@ import Signup from "./routes/signup";
 import Home from "./routes/home";
 import AuthContext from "./Context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Viewitem from "./pages/ViewItem";
 
 function App() {
   const router = createBrowserRouter([
@@ -45,6 +47,14 @@ function App() {
       ),
     },
     {
+      path: "/orders/:orderId",
+      element: (
+        <ProtectedRoute>
+          <Viewitem />,
+        </ProtectedRoute>
+      ),
+    },
+    {
       path: "/login",
       element: <Login />,
     },
@@ -56,23 +66,12 @@ function App() {
       path: "*",
       element: <div>404</div>,
     },
+    {
+      path: "/register/admin",
+      element: <Signup />,
+    },
   ]);
   return (
-    // <Router>
-    //   <div className="dashboard-container">
-    //     <SideBar menu={sidebar_menu} />
-
-    //     <div className="dashboard-body">
-    //       <Routes>
-    //         <Route path="*" element={<div></div>} />
-    //         <Route exact path="/dash" element={<div></div>} />
-    //         <Route exact path="/orders" element={<Orders />} />
-    //         <Route exact path="/locations" element={<div></div>} />
-    //         <Route exact path="/profile" element={<div></div>} />
-    //       </Routes>
-    //     </div>
-    //   </div>
-    // </Router>
     <AuthContext>
       <RouterProvider router={router}></RouterProvider>
     </AuthContext>

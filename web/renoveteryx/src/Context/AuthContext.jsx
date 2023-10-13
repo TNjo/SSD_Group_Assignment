@@ -6,26 +6,23 @@ export const Context = createContext();
 
 function AuthContext({ children }) {
   const auth = getAuth();
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setLoading(false);
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        setUser(null);
-      }
+      setUser(currentUser);
     });
+
     return () => {
-      unsubscribe(); // No need for the "if (unsubscribe)" check
+      unsubscribe(); // Cleanup subscription on unmount
     };
-  }, []);
+  }, [auth]);
 
   const values = {
-    user: user,
-    setUser: setUser,
+    user,
+    loading,
   };
 
   return (
