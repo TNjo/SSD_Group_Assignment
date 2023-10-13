@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp();
+//   runApp(MaterialApp(
+//     home: SMProfilePage(),
+//   ));
+// }
 
 class SMProfilePage extends StatefulWidget {
-  final Map<String, dynamic> userData; // Add this line
+  final Map<String, dynamic> userData;
 
   SMProfilePage({required this.userData, Key? key}) : super(key: key);
 
@@ -10,7 +21,6 @@ class SMProfilePage extends StatefulWidget {
 }
 
 class _SMProfilePageState extends State<SMProfilePage> {
-  // Define variables to hold user details
   String managerName = ''; // Example initial values
   String email = '';
   String password = '';
@@ -19,7 +29,6 @@ class _SMProfilePageState extends State<SMProfilePage> {
   String siteName = '';
   String siteNumber = '';
 
-  // Define a TextEditingController for each input field
   TextEditingController managerNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -28,7 +37,6 @@ class _SMProfilePageState extends State<SMProfilePage> {
   TextEditingController siteNameController = TextEditingController();
   TextEditingController siteNumberController = TextEditingController();
 
-  // Keep track of edit mode for each field
   bool managerNameEditMode = false;
   bool emailEditMode = false;
   bool passwordEditMode = false;
@@ -41,15 +49,9 @@ class _SMProfilePageState extends State<SMProfilePage> {
   void initState() {
     super.initState();
     // Initialize the TextEditingControllers and other variables with user data
-    //managerName = widget.userData['managerName'] ?? '';
     email = widget.userData['email'] ?? '';
     password = widget.userData['password'] ?? '';
-   // contact = widget.userData['contact'] ?? '';
-   // companyName = widget.userData['companyName'] ?? '';
-   // siteName = widget.userData['siteName'] ?? '';
-   // siteNumber = widget.userData['siteNumber'] ?? '';
 
-    // Initialize the TextEditingControllers with existing user details
     managerNameController.text = managerName;
     emailController.text = email;
     passwordController.text = password;
@@ -61,7 +63,6 @@ class _SMProfilePageState extends State<SMProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("UserData: ${widget.userData}");
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -75,9 +76,8 @@ class _SMProfilePageState extends State<SMProfilePage> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.arrow_back), // Add a back button icon
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                // Navigate back to the previous screen when the button is pressed
                 Navigator.pop(context);
               },
             );
@@ -89,8 +89,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
         children: [
           const SizedBox(height: 30.0),
           Align(
-            alignment:
-                Alignment.topCenter, // Align the container to the top center
+            alignment: Alignment.topCenter,
             child: Column(
               children: [
                 Container(
@@ -126,7 +125,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
           ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.only(top: 20.0), // Add spacing here
+              padding: EdgeInsets.only(top: 20.0),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,7 +193,9 @@ class _SMProfilePageState extends State<SMProfilePage> {
                   width: 150.0,
                   height: 50.0,
                   child: FloatingActionButton(
-                    onPressed: (){},
+                    onPressed: () {
+                      updateProfile();
+                    },
                     backgroundColor: Color.fromARGB(255, 90, 121, 141),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
@@ -222,7 +223,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
     String labelText,
     bool isEditMode,
     VoidCallback onEditPressed,
-    bool isPassword, // Add a boolean flag to indicate if it's a password field
+    bool isPassword,
   ) {
     return Padding(
       padding: EdgeInsets.only(top: 3.0, bottom: 0.0, left: 20.0, right: 20.0),
@@ -247,8 +248,6 @@ class _SMProfilePageState extends State<SMProfilePage> {
                 onPressed: () {
                   onEditPressed();
                   if (isEditMode) {
-                    // Save the edited value to your data model or perform any other action.
-                    // You can use the controller to get the updated value.
                     final editedValue = controller.text;
                     print('Edited value: $editedValue');
                   }
@@ -257,8 +256,8 @@ class _SMProfilePageState extends State<SMProfilePage> {
             ],
           ),
           Container(
-            width: 360.0, // Set the desired width
-            height: 45.0, // Set the desired height
+            width: 360.0,
+            height: 45.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
               color: Colors.white,
@@ -273,8 +272,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
             ),
             child: TextField(
               controller: controller,
-              obscureText:
-                  isPassword, // Add this line to obscure the text if it's a password field
+              obscureText: isPassword,
               readOnly: !isEditMode,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -288,5 +286,53 @@ class _SMProfilePageState extends State<SMProfilePage> {
       ),
     );
   }
+
+Future<void> updateProfile() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    final userId = user.uid;
+    final firestore = FirebaseFirestore.instance;
+
+    final updateEmail = emailController.text;
+    final updatePassword = passwordController.text;
+    final updatedManagerName = managerNameController.text;
+    final updatedContact = contactController.text;
+    final updatedCompanyName = companyNameController.text;
+    final updatedSiteName = siteNameController.text;
+    final updatedSiteNumber = siteNumberController.text;
+
+    // Reference to the user's document in the collection
+    final userDocRef = firestore.collection('siteManagers').doc(userId);
+
+    // Check if the document exists
+    final docSnapshot = await userDocRef.get();
+
+    if (docSnapshot.exists) {
+      // Update the existing document
+      await userDocRef.update({
+        'email': updateEmail,
+        'password': updatePassword,
+        'managerName': updatedManagerName,
+        'contact': updatedContact,
+        'companyName': updatedCompanyName,
+        'siteName': updatedSiteName,
+        'siteNumber': updatedSiteNumber,
+      });
+    } else {
+      // Create a new document and set the fields
+      await userDocRef.set({
+        'managerName': updatedManagerName,
+        'contact': updatedContact,
+        'companyName': updatedCompanyName,
+        'siteName': updatedSiteName,
+        'siteNumber': updatedSiteNumber,
+        // Add other fields as needed (name, email, userId, etc.)
+      });
+    }
+
+    // Optionally, you can update the local state or show a confirmation message.
+  }
 }
 
+
+}
