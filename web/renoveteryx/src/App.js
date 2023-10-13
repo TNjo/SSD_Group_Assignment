@@ -20,6 +20,11 @@ import AuthContext from "./Context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Viewitem from "./pages/ViewItem";
 import AdminHome from "./pages/AdminHome";
+import AllOrders from "./pages/AllOrders";
+import MyOrders from "./pages/MyOrders";
+import SiteManagers from "./pages/SiteManagers";
+import Sites from "./pages/Sites";
+import AddSites from "./pages/AddSites";
 
 function App() {
   const router = createBrowserRouter([
@@ -60,6 +65,46 @@ function App() {
       element: (
         <ProtectedRoute>
           <AdminHome />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-sites",
+      element: (
+        <ProtectedRoute>
+          <Sites />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-siteManagers",
+      element: (
+        <ProtectedRoute>
+          <SiteManagers />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-allOrders",
+      element: (
+        <ProtectedRoute>
+          <AllOrders />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-myOrders",
+      element: (
+        <ProtectedRoute>
+          <MyOrders />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-addSites",
+      element: (
+        <ProtectedRoute>
+          <AddSites />,
         </ProtectedRoute>
       ),
     },
