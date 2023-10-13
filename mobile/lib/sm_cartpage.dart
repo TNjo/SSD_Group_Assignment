@@ -3,14 +3,14 @@ import 'package:mobile/components/sm_itemlist.dart';
 
 class SMCartPage extends StatefulWidget {
   final List<String> selectedItems;
-  final Map<String, dynamic> userData; // Add this line
+  final Map<String, dynamic> userData;
 
-  SMCartPage({Key? key, required this.selectedItems, required this.userData}) : super(key: key);
+  SMCartPage({Key? key, required this.selectedItems, required this.userData})
+      : super(key: key);
 
   @override
   State<SMCartPage> createState() => _SMCartState();
 }
-
 
 class _SMCartState extends State<SMCartPage> {
   bool _showHomePage = false;
@@ -35,7 +35,6 @@ class _SMCartState extends State<SMCartPage> {
 
   @override
   Widget build(BuildContext context) {
-     print("UserData: ${widget.userData}");
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -65,9 +64,15 @@ class _SMCartState extends State<SMCartPage> {
                   DataTable(
                     columnSpacing: 42.0,
                     columns: const [
-                      DataColumn(label: Text('Item', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Quantity', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Item',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Quantity',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Action',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
                     ],
                     rows: itemDataList.map((itemData) {
                       return DataRow(cells: [
@@ -76,7 +81,8 @@ class _SMCartState extends State<SMCartPage> {
                           Row(
                             children: [
                               IconButton(
-                                icon: Icon(Icons.remove, size: 16, color: Colors.blue),
+                                icon: Icon(Icons.remove,
+                                    size: 16, color: Colors.blue),
                                 onPressed: () {
                                   // Handle decreasing quantity
                                   setState(() {
@@ -86,9 +92,11 @@ class _SMCartState extends State<SMCartPage> {
                                   });
                                 },
                               ),
-                              Text(itemData.quantity.toString()), // Display the current quantity
+                              Text(itemData.quantity
+                                  .toString()), // Display the current quantity
                               IconButton(
-                                icon: Icon(Icons.add, size: 16, color: Colors.blue),
+                                icon: Icon(Icons.add,
+                                    size: 16, color: Colors.blue),
                                 onPressed: () {
                                   // Handle increasing quantity
                                   setState(() {
@@ -101,7 +109,8 @@ class _SMCartState extends State<SMCartPage> {
                         ),
                         DataCell(
                           IconButton(
-                            icon: Icon(Icons.delete, color: const Color.fromARGB(255, 184, 15, 3)),
+                            icon: Icon(Icons.delete,
+                                color: const Color.fromARGB(255, 184, 15, 3)),
                             onPressed: () {
                               // Handle removing the item from the itemDataList
                               setState(() {
@@ -127,6 +136,13 @@ class _SMCartState extends State<SMCartPage> {
                       ),
                     ),
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle the "Place Order" button click here
+                      // Implement the logic to place the order
+                    },
+                    child: Text("Place Order"),
+                  ),
                 ],
               ),
             ),
@@ -140,4 +156,3 @@ class ItemData {
 
   ItemData({required this.name, required this.quantity});
 }
-
