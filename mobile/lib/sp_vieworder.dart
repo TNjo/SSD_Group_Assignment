@@ -10,7 +10,6 @@ class SPViewOrder extends StatefulWidget {
   final List<String> items;
   final double totalPrice;
 
-  // Provide default values for the properties
   SPViewOrder({
     Key? key,
     this.orderId = '#00003',
@@ -28,19 +27,92 @@ class SPViewOrder extends StatefulWidget {
 }
 
 class _SPViewOrderState extends State<SPViewOrder> {
-  // Define a map to store item prices
   Map<String, double> itemPrices = {
     'Cement': 10.0,
     'Sand': 5.0,
     'Wires': 8.0,
   };
 
+  Map<String, TextEditingController?> itemPriceControllers = {};
+  Map<String, bool> editMode = {};
+  double totalPrice = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize controllers with current item prices
+    for (var item in widget.items) {
+      itemPriceControllers[item] = TextEditingController(
+        text: itemPrices[item]?.toStringAsFixed(2),
+      );
+      editMode[item] = false;
+    }
+
+    // Calculate initial total price
+    calculateTotalPrice();
+  }
+
+  // Calculate the total price based on item prices
+  void calculateTotalPrice() {
+    totalPrice = 0.0;
+    for (var item in widget.items) {
+      double? itemPrice = itemPrices[item];
+      if (itemPrice != null) {
+        totalPrice += itemPrice;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    // Dispose of controllers to prevent memory leaks
+    for (var controller in itemPriceControllers.values) {
+      controller!.dispose();
+    }
+    super.dispose();
+  }
+
+  Widget buildDataContainer(String label, String value, {bool isBold = false}) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey,
+          width: 1.0,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Text(
+            '$label:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              color: isBold ? Colors.black : Colors.grey,
+            ),
+          ),
+          SizedBox(width: 10),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('View Order'),
-        backgroundColor: Colors.yellow, // Change the app bar background color
+        backgroundColor: Colors.yellow,
       ),
       body: Column(
         children: [
@@ -50,222 +122,16 @@ class _SPViewOrderState extends State<SPViewOrder> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Container for "Order ID" and its data
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 20), // Increase vertical spacing
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Order ID:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, // Black text color for label
-                          ),
-                        ),
-                        SizedBox(width: 10), // Add horizontal spacing
-                        Text(
-                          widget.orderId,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey, // Light gray text color for data
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Container for "Company" and its data
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 20), // Increase vertical spacing
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Company:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, // Black text color for label
-                          ),
-                        ),
-                        SizedBox(width: 10), // Add horizontal spacing
-                        Text(
-                          widget.company,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey, // Light gray text color for data
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Container for "Site Manager" and its data
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 20), // Increase vertical spacing
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Site Manager:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, // Black text color for label
-                          ),
-                        ),
-                        SizedBox(width: 10), // Add horizontal spacing
-                        Text(
-                          widget.siteManager,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey, // Light gray text color for data
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Container for "Site Address" and its data
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 20), // Increase vertical spacing
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Site Address:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, // Black text color for label
-                          ),
-                        ),
-                        SizedBox(width: 10), // Add horizontal spacing
-                        Text(
-                          widget.siteAddress,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey, // Light gray text color for data
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Container for "Contact" and its data
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 20), // Increase vertical spacing
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Contact:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, // Black text color for label
-                          ),
-                        ),
-                        SizedBox(width: 10), // Add horizontal spacing
-                        Text(
-                          widget.contact,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey, // Light gray text color for data
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Container for "Request Date" and its data
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 20), // Increase vertical spacing
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Request Date:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, // Black text color for label
-                          ),
-                        ),
-                        SizedBox(width: 10), // Add horizontal spacing
-                        Text(
-                          widget.requestDate,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey, // Light gray text color for data
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Container for "Items" label
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 20), // Increase vertical spacing
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      'Items:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-
-                  // Display item names, prices, and edit buttons
+                  buildDataContainer('Order ID', widget.orderId),
+                  buildDataContainer('Company', widget.company),
+                  buildDataContainer('Site Manager', widget.siteManager,
+                      isBold: true),
+                  buildDataContainer('Site Address', widget.siteAddress,
+                      isBold: true),
+                  buildDataContainer('Contact', widget.contact, isBold: true),
+                  buildDataContainer('Request Date', widget.requestDate,
+                      isBold: true),
+                  buildDataContainer('Items', '', isBold: true),
                   for (var item in widget.items)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -274,30 +140,70 @@ class _SPViewOrderState extends State<SPViewOrder> {
                           item,
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey, // Light gray text color for item name
+                            color: Colors.grey,
                           ),
                         ),
                         Row(
                           children: [
-                            Text(
-                              '\$${itemPrices[item]?.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey, // Light gray text color for item price
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                // Implement the edit price action
-                                // You can show a dialog or navigate to a new screen for editing
-                                // For simplicity, I'll show a snackbar here
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Edit $item Price'),
-                                    duration: Duration(seconds: 2),
+                            if (!editMode[item]!)
+                              Text(
+                                '\$${itemPrices[item]?.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              )
+                            else
+                              Container(
+                                width: 60,
+                                child: TextField(
+                                  controller: itemPriceControllers[item],
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16),
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        '\$${itemPrices[item]?.toStringAsFixed(2)}',
                                   ),
-                                );
+                                  onChanged: (text) {
+                                    setState(() {
+                                      double? editedPrice =
+                                          double.tryParse(
+                                              itemPriceControllers[item]!
+                                                  .text);
+                                      if (editedPrice != null) {
+                                        itemPrices[item] = editedPrice;
+                                        calculateTotalPrice();
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                            IconButton(
+                              icon: Icon(
+                                editMode[item]!
+                                    ? Icons.check
+                                    : Icons.edit,
+                                color: editMode[item]!
+                                    ? Colors.green
+                                    : const Color.fromARGB(255, 36, 36, 36),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (!editMode[item]!) {
+                                    editMode[item] = true;
+                                  } else {
+                                    editMode[item] = false;
+                                    double? editedPrice =
+                                        double.tryParse(
+                                            itemPriceControllers[item]!
+                                                .text);
+                                    if (editedPrice != null) {
+                                      itemPrices[item] = editedPrice;
+                                      calculateTotalPrice();
+                                    }
+                                  }
+                                });
                               },
                             ),
                           ],
@@ -305,47 +211,16 @@ class _SPViewOrderState extends State<SPViewOrder> {
                       ],
                     ),
 
-                  // Container for "Total Price" and its data
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.only(bottom: 70), // Increase vertical spacing
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Total Price:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, // Black text color for label
-                          ),
-                        ),
-                        SizedBox(width: 10), // Add horizontal spacing
-                        Text(
-                          '\$${calculateTotalPrice().toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green, // Green text color for total price
-                          ),
-                        ),
-                      ],
-                    ),
+                  buildDataContainer(
+                    'Total Price',
+                    '\$${totalPrice.toStringAsFixed(2)}',
+                    isBold: true,
                   ),
-
-                  SizedBox(height: 20), // Add vertical spacing
+                  SizedBox(height: 20),
                 ],
               ),
             ),
           ),
-
-          // Buttons
           Container(
             padding: EdgeInsets.all(16.0),
             child: Row(
@@ -356,8 +231,7 @@ class _SPViewOrderState extends State<SPViewOrder> {
                     // Implement the Confirm button action
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Colors.green), // Change the button background color
+                    backgroundColor: MaterialStateProperty.all(Colors.green),
                   ),
                   child: Text('Confirm', style: TextStyle(fontSize: 16)),
                 ),
@@ -366,8 +240,7 @@ class _SPViewOrderState extends State<SPViewOrder> {
                     // Implement the Reject button action
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Colors.red), // Change the button background color
+                    backgroundColor: MaterialStateProperty.all(Colors.red),
                   ),
                   child: Text('Reject', style: TextStyle(fontSize: 16)),
                 ),
@@ -376,10 +249,10 @@ class _SPViewOrderState extends State<SPViewOrder> {
                     // Implement the Send New Questions button action
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Colors.yellow), // Change the button background color
+                    backgroundColor: MaterialStateProperty.all(Colors.yellow),
                   ),
-                  child: Text('Send New Questions', style: TextStyle(fontSize: 16)),
+                  child: Text('Send New Questions',
+                      style: TextStyle(fontSize: 16)),
                 ),
               ],
             ),
@@ -388,18 +261,8 @@ class _SPViewOrderState extends State<SPViewOrder> {
       ),
     );
   }
-
-  // Function to calculate the total price
-  double calculateTotalPrice() {
-    double total = 0.0;
-    for (var item in widget.items) {
-      if (itemPrices.containsKey(item)) {
-        total += itemPrices[item]!;
-      }
-    }
-    return total;
-  }
 }
+
 
 
 

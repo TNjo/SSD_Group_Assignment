@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,36 +14,38 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   Future<void> _login() async {
-    try {
-      final String email = emailController.text;
-      final String password = passwordController.text;
+  try {
+    final String email = emailController.text;
+    final String password = passwordController.text;
 
-      // Sign in the user with Firebase Authentication
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+    // Sign in the user with Firebase Authentication
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
 
-      // Fetch the user's role from Firestore
-      String uid = userCredential.user!.uid;
-      String userRole = await _getUserRole(uid);
+    // Fetch the user's role from Firestore
+    String uid = userCredential.user!.uid;
+    String userRole = await _getUserRole(uid);
 
-      // Navigate based on the user's role
-      if (userRole == "site_manager") {
-        Navigator.pushNamed(context, '/sm_navbar', arguments: 0);
-      } else if (userRole == "supplier") {
-        Navigator.pushNamed(context, '/sp_navbar', arguments: 1);
-      }
+    // Navigate based on the user's role and pass the email
+    if (userRole == "site_manager") {
+      Navigator.pushNamed(context, '/sm_navbar', arguments: {'email': email, 'password': password, 'role': userRole, 'uid': uid});
 
-      // Clear the text fields after successful login
-      emailController.clear();
-      passwordController.clear();
-    } catch (e) {
-      // Handle login errors (e.g., invalid credentials)
-      print('Error during login: $e');
+    } else if (userRole == "supplier") {
+      Navigator.pushNamed(context, '/sp_navbar', arguments: {'email': email, 'password': password, 'role': userRole, 'uid': uid});
     }
+
+    // Clear the text fields after successful login
+    emailController.clear();
+    passwordController.clear();
+  } catch (e) {
+    // Handle login errors (e.g., invalid credentials)
+    print('Error during login: $e');
   }
+}
+
 
   Future<String> _getUserRole(String uid) async {
     // Fetch user role from Firestore based on the user's UID

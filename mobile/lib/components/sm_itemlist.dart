@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/sm_cartpage.dart';
 import 'package:searchbar_animation/searchbar_animation.dart';
 
 class SMItemlist extends StatefulWidget {
@@ -20,6 +21,7 @@ class _SMItemlistState
     'Wires',
     'Pipes',
   ];
+  List<String> selectedItemsList = [];
 
   List<bool> selectedItems = List.generate(6, (index) => false);
 
@@ -111,7 +113,14 @@ class _SMItemlistState
                   width: 150.0,
                   height: 50.0,
                   child: FloatingActionButton(
-                    onPressed: (){},
+                    onPressed: (){// Pass selected items to the cart page.
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => SMCartPage(selectedItems: selectedItemsList),
+                  //   ),
+                  // );
+                  },
                     backgroundColor: Color.fromARGB(255, 90, 121, 141),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),

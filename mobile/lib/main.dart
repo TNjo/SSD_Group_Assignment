@@ -1,47 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:device_preview/device_preview.dart';
-
-// import 'package:mobile/components/sp_navbar.dart';
-// import 'package:mobile/components/sm_navbar.dart';
-
-// import 'package:mobile/first_page.dart';
-// import 'package:mobile/login_page.dart';
-// import 'package:mobile/signup_page.dart';
-
-// import 'package:mobile/sm_cartpage.dart';
-// import 'package:mobile/sm_homepage.dart';
-// import 'package:mobile/sm_orderspage.dart';
-// import 'package:mobile/sm_profilepage.dart';
-
-// void main() => runApp(
-//       DevicePreview(
-//         builder: (context) => MyApp(), // Wrap your app
-//       ),
-//     );
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       locale: DevicePreview.locale(context),
-//       builder: DevicePreview.appBuilder,
-//       home: FirstPage(), // Set the initial screen to Screen1.
-//       routes: <String, WidgetBuilder>{
-//         '/login':(context) => LoginPage(),
-//         '/signup':(context) => SignupPage(),
-//         '/sm_navbar':(context) => SMNavBar(),
-//         '/sm_home':(context) => SMHomePage(),
-//         '/sm_profile':(context) => SMProfilePage(),
-//         '/sm_cart':(context) => SMCartPage(),
-//         '/sm_orders':(context) => SMOrdersPage(),
-
-//         '/sp_navbar':(context) => SPNavBar()
-//       },
-//   );
-//   }
-// }
-
-
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -82,15 +38,50 @@ class MyApp extends StatelessWidget {
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       home: FirstPage(),
+      // onGenerateRoute: (settings) {
+      //   if (settings.name == '/sm_cart') {
+      //     // Retrieve the selectedItems list from the arguments
+      //     final List<String> selectedItems = settings.arguments as List<String>;
+      //     return MaterialPageRoute(
+      //       builder: (context) => SMCartPage(selectedItems: selectedItems),
+      //     );
+      //   }
+      //   return null;
+      // },
       routes: <String, WidgetBuilder>{
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignupPage(),
-        '/sm_navbar': (context) => SMNavBar(),
-        '/sm_home': (context) => SMHomePage(),
-        '/sm_profile': (context) => SMProfilePage(),
-        '/sm_cart': (context) => SMCartPage(),
-        '/sm_orders': (context) => SMOrdersPage(),
-        '/sp_navbar': (context) => SPNavBar(),
+        '/sm_navbar': (context) {
+          // Retrieve the user data from arguments
+          final Map<String, dynamic> userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return SMNavBar(userData: userData);
+        },
+        '/sm_home': (context) {
+          // Retrieve the user data from arguments
+          final Map<String, dynamic> userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return SMHomePage(userData: userData);
+        },
+        '/sm_profile': (context) {
+          // Retrieve the user data from arguments
+          final Map<String, dynamic> userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return SMProfilePage(userData: userData);
+        },
+        '/sm_cart': (context) {
+          // Retrieve the user data and selectedItems from arguments
+          final Map<String, dynamic> userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          final List<String> selectedItems = userData['selectedItems'] as List<String>;
+          return SMCartPage(selectedItems: selectedItems, userData: userData);
+        },
+        '/sm_orders': (context) {
+          // Retrieve the user data from arguments
+          final Map<String, dynamic> userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return SMOrdersPage(userData: userData);
+        },
+        '/sp_navbar': (context) {
+          // Retrieve the user data from arguments
+          final Map<String, dynamic> userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return SPNavBar(userData: userData);
+        },
       },
     );
   }

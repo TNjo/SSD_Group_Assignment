@@ -8,12 +8,21 @@ import 'package:motion_tab_bar_v2/motion-badge.widget.dart';
 import 'package:motion_tab_bar_v2/motion-tab-controller.dart';
 
 class SMNavBar extends StatefulWidget {
+  final Map<String, dynamic> userData;
+
+  SMNavBar({required this.userData});
+
   @override
-  _SMNavBarState createState() => _SMNavBarState();
+  _SMNavBarState createState() => _SMNavBarState(userData: userData);
 }
 
 class _SMNavBarState extends State<SMNavBar> with TickerProviderStateMixin {
   MotionTabBarController? _motionTabBarController;
+  List<String> selectedItems = []; // Define the selected items list
+
+  final Map<String, dynamic> userData;
+
+  _SMNavBarState({required this.userData});
 
   @override
   void initState() {
@@ -21,7 +30,7 @@ class _SMNavBarState extends State<SMNavBar> with TickerProviderStateMixin {
 
     _motionTabBarController = MotionTabBarController(
       initialIndex: 0,
-      length: 4, // Update the length to 4
+      length: 4,
       vsync: this,
     );
   }
@@ -34,17 +43,18 @@ class _SMNavBarState extends State<SMNavBar> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    print("UserData: ${widget.userData}");
     return Scaffold(
       bottomNavigationBar: MotionTabBar(
         controller: _motionTabBarController,
         initialSelectedTab: "Home",
-        labels: const ["Home","Profile","Cart", "Orders"], // Update labels
+        labels: const ["Home", "Profile", "Cart", "Orders"],
         icons: const [
           Icons.home,
-          Icons.person,          
+          Icons.person,
           Icons.shopping_cart,
-          Icons.shopping_basket, // Add the Orders icon
-        ], // Update icons
+          Icons.shopping_basket,
+        ],
         badges: [
           null,
           null,
@@ -84,15 +94,13 @@ class _SMNavBarState extends State<SMNavBar> with TickerProviderStateMixin {
         physics: NeverScrollableScrollPhysics(),
         controller: _motionTabBarController,
         children: <Widget>[
-          SMHomePage(),   // Home Page
-          SMProfilePage(),        // Cart Page
-          SMCartPage(),    // Profile Page
-          SMOrdersPage(),        // Orders Page
+          SMHomePage(userData: userData), // Pass userData to Home Page
+          SMProfilePage(userData: userData), // Pass userData to Profile Page
+          SMCartPage(selectedItems: selectedItems, userData: userData), // Pass userData to Cart Page
+          SMOrdersPage(userData: userData), // Pass userData to Orders Page
         ],
       ),
     );
   }
 }
-
-
 

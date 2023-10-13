@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SMProfilePage extends StatefulWidget {
+  final Map<String, dynamic> userData; // Add this line
+
+  SMProfilePage({required this.userData, Key? key}) : super(key: key);
+
   @override
   _SMProfilePageState createState() => _SMProfilePageState();
 }

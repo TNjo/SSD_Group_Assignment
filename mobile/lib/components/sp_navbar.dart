@@ -8,10 +8,14 @@ import 'package:motion_tab_bar_v2/motion-tab-controller.dart';
 
 class SPNavBar extends StatefulWidget {
   final int initialTabIndex;
-  SPNavBar({this.initialTabIndex = 0});
+  final Map<String, dynamic> userData; // Add this line
+
+  SPNavBar({this.initialTabIndex = 0, required this.userData}); // Add `required` to userData parameter
+
   @override
   State<SPNavBar> createState() => _SPNavBarState();
 }
+
 
 class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin{
    MotionTabBarController? _motionTabBarController;
