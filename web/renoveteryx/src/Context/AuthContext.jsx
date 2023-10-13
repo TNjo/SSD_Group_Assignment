@@ -12,7 +12,22 @@ function AuthContext({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setLoading(false);
-      setUser(currentUser);
+
+      if (currentUser) {
+        const email = currentUser.email;
+        const role = email.endsWith("@gmail.com")
+          ? "user"
+          : email.endsWith("@example.com")
+          ? "admin"
+          : null;
+
+        setUser({
+          ...currentUser,
+          role,
+        });
+      } else {
+        setUser(null);
+      }
     });
 
     return () => {
@@ -26,11 +41,7 @@ function AuthContext({ children }) {
   };
 
   return (
-    <Context.Provider value={values}>
-      {" "}
-      {/* Remove the double destructuring here */}
-      {!loading && children}
-    </Context.Provider>
+    <Context.Provider value={values}>{!loading && children}</Context.Provider>
   );
 }
 

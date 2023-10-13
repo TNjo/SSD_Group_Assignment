@@ -19,6 +19,7 @@ import Home from "./routes/home";
 import AuthContext from "./Context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Viewitem from "./pages/ViewItem";
+import AdminHome from "./pages/AdminHome";
 
 function App() {
   const router = createBrowserRouter([
@@ -51,6 +52,14 @@ function App() {
       element: (
         <ProtectedRoute>
           <Viewitem />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-home",
+      element: (
+        <ProtectedRoute>
+          <AdminHome />,
         </ProtectedRoute>
       ),
     },
