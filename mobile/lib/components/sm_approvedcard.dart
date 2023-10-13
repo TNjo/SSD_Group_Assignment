@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class PendingOrdersCard extends StatelessWidget {
+class ApprovedOrdersCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('orders')
-          .where('status', isEqualTo: 'Pending') // Filter by status
+          .where('status', isEqualTo: 'App') // Filter by status
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
