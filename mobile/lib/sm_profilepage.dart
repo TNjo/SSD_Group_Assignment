@@ -3,14 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp();
-//   runApp(MaterialApp(
-//     home: SMProfilePage(),
-//   ));
-// }
-
 class SMProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
 
@@ -301,14 +293,18 @@ Future<void> updateProfile() async {
     final updatedSiteName = siteNameController.text;
     final updatedSiteNumber = siteNumberController.text;
 
-    // Reference to the user's document in the collection
-    final userDocRef = firestore.collection('siteManagers').doc(userId);
+    // Query the documents based on the 'userId' field
+    final userDocsQuery = firestore
+        .collection('siteManagers')
+        .where('userId', isEqualTo: userId);
 
-    // Check if the document exists
-    final docSnapshot = await userDocRef.get();
+    final userDocsSnapshot = await userDocsQuery.get();
 
-    if (docSnapshot.exists) {
-      // Update the existing document
+    if (userDocsSnapshot.docs.isNotEmpty) {
+      // Since userId is unique, there should be only one matching document
+      final userDocRef = userDocsSnapshot.docs[0].reference;
+
+      // Update the existing document with new data
       await userDocRef.update({
         'email': updateEmail,
         'password': updatePassword,
@@ -319,20 +315,15 @@ Future<void> updateProfile() async {
         'siteNumber': updatedSiteNumber,
       });
     } else {
-      // Create a new document and set the fields
-      await userDocRef.set({
-        'managerName': updatedManagerName,
-        'contact': updatedContact,
-        'companyName': updatedCompanyName,
-        'siteName': updatedSiteName,
-        'siteNumber': updatedSiteNumber,
-        // Add other fields as needed (name, email, userId, etc.)
-      });
+      // Handle the case where no document matches the userId
+      print('Error: Document for user does not exist.');
     }
 
     // Optionally, you can update the local state or show a confirmation message.
   }
 }
+
+
 
 
 }
