@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/sm_approvedcard.dart';
 import 'package:mobile/components/sm_pendingcard.dart';
-import 'package:mobile/components/sm_recievedcard.dart';
+
 
 class SMOrdersPage extends StatefulWidget {
   final Map<String, dynamic> userData; // Add this line
@@ -75,15 +76,15 @@ class _SMOrdersPageState extends State<SMOrdersPage> {
                       ? MaterialStateProperty.all(Colors.grey)
                       :  MaterialStateProperty.all( Color.fromARGB(255, 255, 187, 0),)
                 ),
-                child: Text('Received Orders'),
+                child: Text('Approved Orders'),
               ),
             ],
           ),
           const SizedBox(height: 30.0),
           Expanded(
             child: showPendingOrders
-                ? PendingOrdersCard()
-                : ReceivedOrdersCard(),
+                ? PendingOrdersCard() 
+                : ApprovedOrdersCard(),
           ),
         ],
       ),
