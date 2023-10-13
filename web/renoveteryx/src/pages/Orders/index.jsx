@@ -64,7 +64,7 @@ function Orders() {
     <div className="dashboard-content">
       <DashboardHeader btnText="New Order" />
 
-      {/* <div className="dashboard-content-container">
+      <div className="dashboard-content-container">
         <div className="dashboard-content-header">
           <h2>Orders List</h2>
           <div className="dashboard-content-search">
@@ -93,7 +93,7 @@ function Orders() {
               {orders.map((order, index) => (
                 <tr key={index}>
                   <td>{order.orderID}</td>
-                  <td>{order.date}</td>
+                  <td></td>
                   <td>
                     <div>{order.siteManager}</div>
                   </td>
@@ -132,7 +132,7 @@ function Orders() {
             <span className="empty-table">No data</span>
           </div>
         )}
-      </div> */}
+      </div>
     </div>
   );
 }
