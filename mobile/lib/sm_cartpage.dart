@@ -1,18 +1,34 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/components/sm_itemlist.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SMCartPage extends StatefulWidget {
   final List<String> selectedItems;
-  final Map<String, dynamic> userData; // Add this line
+  final Map<String, dynamic> userData;
 
-  SMCartPage({Key? key, required this.selectedItems, required this.userData}) : super(key: key);
+  SMCartPage({Key? key, required this.selectedItems, required this.userData})
+      : super(key: key);
 
   @override
   State<SMCartPage> createState() => _SMCartState();
 }
 
-
 class _SMCartState extends State<SMCartPage> {
+  String managerName = '';
+  String companyName = '';
+  String siteName = '';
+  String siteNumber = '';
+
+  String generateOrderId() {
+    // Generate a unique order ID based on the current timestamp and a random number
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final random = (1000 + Random().nextInt(9000)).toString(); // Generates a 4-digit random number
+    return '$timestamp$random';
+  }
+
   bool _showHomePage = false;
 
   void _toggleHomePage() {
@@ -23,6 +39,39 @@ class _SMCartState extends State<SMCartPage> {
 
   List<ItemData> itemDataList = [];
 
+  void placeOrder() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final firestore = FirebaseFirestore.instance;
+
+      // Construct the order data
+      final orderData = {
+        'constructionSite': siteName, // Replace with your data source
+        'date': Timestamp.now(),
+        'items': itemDataList.map((item) {
+          return {
+            'name': item.name,
+            'quantity': item.quantity,
+          };
+        }).toList(),
+        'orderid': generateOrderId(), // Implement this method
+        'sitemanager': managerName, // Replace with your data source
+        'status': 'Pending', // Initial status
+        'supplier': '', // Replace with your data source
+        'totalPrice': '', // Implement this method
+      };
+
+      // Add the order to the Firestore "orders" collection
+      firestore.collection('orders').add(orderData).then((docRef) {
+        print('Order placed with ID: ${docRef.id}');
+        // Clear the itemDataList or update it as needed
+        itemDataList.clear();
+      }).catchError((error) {
+        print('Error placing order: $error');
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -31,11 +80,30 @@ class _SMCartState extends State<SMCartPage> {
     for (String itemName in widget.selectedItems) {
       itemDataList.add(ItemData(name: itemName, quantity: 1));
     }
-  }
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final firestore = FirebaseFirestore.instance;
 
+      // Query the 'siteManagers' collection to find the document with the matching 'userId'
+      firestore
+          .collection('siteManagers')
+          .where('userId', isEqualTo: user.uid)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          final userDoc = querySnapshot.docs[0];
+          setState(() {
+            managerName = userDoc['managerName'] ?? '';
+            companyName = userDoc['companyName'] ?? '';
+            siteName = userDoc['siteName'] ?? '';
+            siteNumber = userDoc['siteNumber'] ?? '';
+          });
+        }
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
-     print("UserData: ${widget.userData}");
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -65,9 +133,15 @@ class _SMCartState extends State<SMCartPage> {
                   DataTable(
                     columnSpacing: 42.0,
                     columns: const [
-                      DataColumn(label: Text('Item', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Quantity', style: TextStyle(fontWeight: FontWeight.bold))),
-                      DataColumn(label: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Item',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Quantity',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      DataColumn(
+                          label: Text('Action',
+                              style: TextStyle(fontWeight: FontWeight.bold))),
                     ],
                     rows: itemDataList.map((itemData) {
                       return DataRow(cells: [
@@ -76,7 +150,8 @@ class _SMCartState extends State<SMCartPage> {
                           Row(
                             children: [
                               IconButton(
-                                icon: Icon(Icons.remove, size: 16, color: Colors.blue),
+                                icon: Icon(Icons.remove,
+                                    size: 16, color: Colors.blue),
                                 onPressed: () {
                                   // Handle decreasing quantity
                                   setState(() {
@@ -86,9 +161,11 @@ class _SMCartState extends State<SMCartPage> {
                                   });
                                 },
                               ),
-                              Text(itemData.quantity.toString()), // Display the current quantity
+                              Text(itemData.quantity
+                                  .toString()), // Display the current quantity
                               IconButton(
-                                icon: Icon(Icons.add, size: 16, color: Colors.blue),
+                                icon: Icon(Icons.add,
+                                    size: 16, color: Colors.blue),
                                 onPressed: () {
                                   // Handle increasing quantity
                                   setState(() {
@@ -101,7 +178,8 @@ class _SMCartState extends State<SMCartPage> {
                         ),
                         DataCell(
                           IconButton(
-                            icon: Icon(Icons.delete, color: const Color.fromARGB(255, 184, 15, 3)),
+                            icon: Icon(Icons.delete,
+                                color: const Color.fromARGB(255, 184, 15, 3)),
                             onPressed: () {
                               // Handle removing the item from the itemDataList
                               setState(() {
@@ -126,6 +204,13 @@ class _SMCartState extends State<SMCartPage> {
                         style: TextStyle(fontSize: 24),
                       ),
                     ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      placeOrder();
+                    },
+                    child: Text("Place Order"),
+                    
                   ),
                 ],
               ),

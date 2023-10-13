@@ -39,20 +39,41 @@ class _SMProfilePageState extends State<SMProfilePage> {
 
   @override
   void initState() {
-    super.initState();
-    // Initialize the TextEditingControllers and other variables with user data
-    email = widget.userData['email'] ?? '';
-    password = widget.userData['password'] ?? '';
+  super.initState();
+  // Initialize the TextEditingControllers and other variables with user data
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    final firestore = FirebaseFirestore.instance;
 
-    managerNameController.text = managerName;
-    emailController.text = email;
-    passwordController.text = password;
-    contactController.text = contact;
-    companyNameController.text = companyName;
-    siteNameController.text = siteName;
-    siteNumberController.text = siteNumber;
+    // Query the 'siteManagers' collection to find the document with the matching 'userId'
+    firestore.collection('siteManagers')
+      .where('userId', isEqualTo: user.uid)
+      .get()
+      .then((QuerySnapshot querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          final userDoc = querySnapshot.docs[0];
+          setState(() {
+            email = userDoc['email'] ?? '';
+            password = userDoc['password'] ?? '';
+            managerName = userDoc['managerName'] ?? '';
+            contact = userDoc['contact'] ?? '';
+            companyName = userDoc['companyName'] ?? '';
+            siteName = userDoc['siteName'] ?? '';
+            siteNumber = userDoc['siteNumber'] ?? '';
+
+            // Assign these values to your TextEditingControllers if needed
+            emailController.text = email;
+            passwordController.text = password;
+            managerNameController.text = managerName;
+            contactController.text = contact;
+            companyNameController.text = companyName;
+            siteNameController.text = siteName;
+            siteNumberController.text = siteNumber;
+          });
+        }
+      });
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -322,8 +343,4 @@ Future<void> updateProfile() async {
     // Optionally, you can update the local state or show a confirmation message.
   }
 }
-
-
-
-
 }

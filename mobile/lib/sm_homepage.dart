@@ -3,10 +3,10 @@ import 'package:mobile/sm_cartpage.dart';
 import 'package:searchbar_animation/searchbar_animation.dart';
 
 class SMHomePage extends StatefulWidget {
-  final Map<String, dynamic> userData; // Add this line
+  final Map<String, dynamic> userData;
 
   SMHomePage({required this.userData, Key? key}) : super(key: key);
-  
+
   @override
   State<SMHomePage> createState() => _SMHomePageState();
 }
@@ -23,9 +23,18 @@ class _SMHomePageState extends State<SMHomePage> {
   ];
   List<String> selectedItemsList = [];
   List<bool> selectedItems = List.generate(6, (index) => false);
+
+  List<String> filteredItems = []; // Initialize the filtered items list
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the filtered items list with all items
+    filteredItems = items;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // print("UserData: ${widget.userData}");
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -39,9 +48,8 @@ class _SMHomePageState extends State<SMHomePage> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.arrow_back), // Add a back button icon
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                // Navigate back to the previous screen when the button is pressed
                 Navigator.pop(context);
               },
             );
@@ -63,13 +71,12 @@ class _SMHomePageState extends State<SMHomePage> {
                   colors: [
                     Color.fromARGB(199, 158, 158, 158),
                     Color.fromARGB(136, 96, 125, 139)
-                  ], // Define your gradient colors
+                  ],
                 ),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment
-                    .stretch, // Stretch the children to full width
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,11 +93,12 @@ class _SMHomePageState extends State<SMHomePage> {
                         ),
                       ),
                       const SizedBox(
-                          width: 12.0), // Add spacing between text and image
+                        width: 12.0,
+                      ),
                       Image.asset(
-                        "assets/welcome_img.png", // Replace with the path to your PNG image
-                        width: 180.0, // Set the desired width of the image
-                        height: 120.0, // Set the desired height of the image
+                        "assets/welcome_img.png",
+                        width: 180.0,
+                        height: 120.0,
                         scale: 0.1,
                       ),
                     ],
@@ -110,6 +118,15 @@ class _SMHomePageState extends State<SMHomePage> {
                     onFieldSubmitted: (String value) {
                       debugPrint('onFieldSubmitted value $value');
                     },
+                    onChanged: (value) {
+                      // Filter the items based on the search query
+                      setState(() {
+                        filteredItems = items
+                            .where((item) =>
+                                item.toLowerCase().contains(value.toLowerCase()))
+                            .toList();
+                      });
+                    },
                   ),
                 ],
               ),
@@ -118,29 +135,28 @@ class _SMHomePageState extends State<SMHomePage> {
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: items.length,
+                itemCount: filteredItems.length, // Use the filtered items
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(
                         vertical: 10.0, horizontal: 12.0),
                     padding: const EdgeInsets.all(16.0),
-                    height: 50.0, // Set the desired height
+                    height: 50.0,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                          10.0), // Increase the corner radius
+                      borderRadius: BorderRadius.circular(10.0),
                       boxShadow: const [
                         BoxShadow(
-                          color: Color(0x5f000000), // Increase shadow opacity
-                          offset: Offset(0.0, 4.0), // Increase shadow offset
-                          blurRadius: 12.0, // Increase shadow blur radius
+                          color: Color(0x5f000000),
+                          offset: Offset(0.0, 4.0),
+                          blurRadius: 12.0,
                         ),
                       ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(items[index],
+                        Text(filteredItems[index],
                             style: const TextStyle(fontSize: 16.0)),
                         Checkbox(
                           value: selectedItems[index],
@@ -165,15 +181,13 @@ class _SMHomePageState extends State<SMHomePage> {
                     height: 50.0,
                     child: FloatingActionButton(
                       onPressed: () {
-                        // Create a list of selected item names
                         List<String> selectedNames = [];
                         for (int i = 0; i < selectedItems.length; i++) {
                           if (selectedItems[i]) {
-                            selectedNames.add(items[i]);
+                            selectedNames.add(filteredItems[i]);
                           }
                         }
 
-                       // Pass selected items to the cart page.
                         Navigator.push(
                           context,
                           MaterialPageRoute(
