@@ -38,7 +38,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
   bool siteNumberEditMode = false;
 
   @override
-void initState() {
+  void initState() {
   super.initState();
   // Initialize the TextEditingControllers and other variables with user data
   final user = FirebaseAuth.instance.currentUser;
@@ -74,8 +74,6 @@ void initState() {
       });
   }
 }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -345,8 +343,4 @@ Future<void> updateProfile() async {
     // Optionally, you can update the local state or show a confirmation message.
   }
 }
-
-
-
-
 }
