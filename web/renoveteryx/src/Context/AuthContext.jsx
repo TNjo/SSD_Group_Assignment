@@ -6,34 +6,42 @@ export const Context = createContext();
 
 function AuthContext({ children }) {
   const auth = getAuth();
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setLoading(false);
+
       if (currentUser) {
-        setUser(currentUser);
+        const email = currentUser.email;
+        const role = email.endsWith("@gmail.com")
+          ? "user"
+          : email.endsWith("@example.com")
+          ? "admin"
+          : null;
+
+        setUser({
+          ...currentUser,
+          role,
+        });
       } else {
         setUser(null);
       }
     });
+
     return () => {
-      unsubscribe(); // No need for the "if (unsubscribe)" check
+      unsubscribe(); // Cleanup subscription on unmount
     };
-  }, []);
+  }, [auth]);
 
   const values = {
-    user: user,
-    setUser: setUser,
+    user,
+    loading,
   };
 
   return (
-    <Context.Provider value={values}>
-      {" "}
-      {/* Remove the double destructuring here */}
-      {!loading && children}
-    </Context.Provider>
+    <Context.Provider value={values}>{!loading && children}</Context.Provider>
   );
 }
 
