@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SPAddItems extends StatefulWidget {
   final Map<String, dynamic> userData;
+
   SPAddItems({required this.userData, Key? key}) : super(key: key);
 
   @override
@@ -9,23 +12,33 @@ class SPAddItems extends StatefulWidget {
 }
 
 class _SPAddItemsState extends State<SPAddItems> {
-  // Define variables to hold item details
-  String itemName = '';
-  String description = '';
-  double price = 0.0;
-  int quantity = 0;
-
-  // Define TextEditingController for each input field
   TextEditingController itemNameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
 
-  // Keep track of edit mode for each field
-  bool itemNameEditMode = true;
-  bool descriptionEditMode = true;
-  bool priceEditMode = true;
-  bool quantityEditMode = true;
+  Future<void> updateProfile(List<Map<String, dynamic>> updatedItems) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+      final firestore = FirebaseFirestore.instance;
+
+      final userDocsQuery =
+          firestore.collection('suppliers').where('userId', isEqualTo: userId);
+
+      final userDocsSnapshot = await userDocsQuery.get();
+
+      if (userDocsSnapshot.docs.isNotEmpty) {
+        final userDocRef = userDocsSnapshot.docs[0].reference;
+
+        await userDocRef.update({
+          'items': updatedItems,
+        });
+      } else {
+        print('Error: Document for user does not exist.');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +68,11 @@ class _SPAddItemsState extends State<SPAddItems> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container with background color for "Add Items" text
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Container(
                 width: double.infinity,
-                color: Colors.grey, // Set your desired background color
+                color: Colors.grey,
                 padding: const EdgeInsets.all(20.0),
                 child: Center(
                   child: Text(
@@ -68,84 +80,81 @@ class _SPAddItemsState extends State<SPAddItems> {
                     style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black, // You can customize the text color
+                      color: Colors.black,
                     ),
                   ),
                 ),
               ),
             ),
             SizedBox(height: 20.0),
-            buildEditableField(
-              itemNameController,
-              'Item Name',
-              itemNameEditMode,
-              () {
-                setState(() {
-                  itemNameEditMode = !itemNameEditMode;
-                });
-              },
-              false,
-            ),
-            buildEditableField(
-              descriptionController,
-              'Description',
-              descriptionEditMode,
-              () {
-                setState(() {
-                  descriptionEditMode = !descriptionEditMode;
-                });
-              },
-              false,
-            ),
-            buildEditableField(
-              priceController,
-              'Price',
-              priceEditMode,
-              () {
-                setState(() {
-                  priceEditMode = !priceEditMode;
-                });
-              },
-              false,
-            ),
-            buildEditableField(
-              quantityController,
-              'Quantity',
-              quantityEditMode,
-              () {
-                setState(() {
-                  quantityEditMode = !quantityEditMode;
-                });
-              },
-              false,
-            ),
+            buildEditableField(itemNameController, 'Item Name'),
+            buildEditableField(descriptionController, 'Description'),
+            buildEditableField(priceController, 'Price',
+                keyboardType: TextInputType.numberWithOptions(decimal: true)),
+            buildEditableField(quantityController, 'Quantity',
+                keyboardType: TextInputType.number),
             SizedBox(height: 20.0),
-            // The "Add Item" button wrapped in a centered Container
             Container(
               alignment: Alignment.center,
               child: ElevatedButton(
-                onPressed: () {
-                  // Handle the submission of item details here.
+                onPressed: () async {
                   final itemName = itemNameController.text;
                   final description = descriptionController.text;
                   final price = double.tryParse(priceController.text) ?? 0.0;
                   final quantity = int.tryParse(quantityController.text) ?? 0;
 
-                  // Print or save the item details.
-                  print('Item Name: $itemName');
-                  print('Description: $description');
-                  print('Price: $price');
-                  print('Quantity: $quantity');
+                  if (itemName.isNotEmpty) {
+                    final newItem = {
+                      'itemName': itemName,
+                      'description': description,
+                      'price': price,
+                      'quantity': quantity,
+                    };
 
-                  // You can perform further actions like saving the data to a database.
+                    // Create a copy of the existing items list and add the new item
+                    final updatedItems = List<Map<String, dynamic>>.from(
+                        widget.userData['items'] ?? []);
+                    updatedItems.add(newItem);
+
+                    // Update the profile with the updated items
+                    await updateProfile(updatedItems);
+
+                    print('Item Name: $itemName');
+                    print('Description: $description');
+                    print('Price: $price');
+                    print('Quantity: $quantity');
+
+                    itemNameController.clear();
+                    descriptionController.clear();
+                    priceController.clear();
+                    quantityController.clear();
+                  } else {
+                    // Handle empty item name.
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Item Name is required"),
+                        content: Text("Please enter a name for your item."),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text("OK"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.yellow, // Background color
-                  onPrimary: Colors.black, // Text color
+                  primary: Colors.yellow,
+                  onPrimary: Colors.black,
                   textStyle: TextStyle(
-                    fontSize: 20.0, // Font size
+                    fontSize: 20.0,
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0), // Button size
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
                 ),
                 child: Text('Add Item'),
               ),
@@ -156,13 +165,8 @@ class _SPAddItemsState extends State<SPAddItems> {
     );
   }
 
-  Widget buildEditableField(
-    TextEditingController controller,
-    String labelText,
-    bool isEditMode,
-    VoidCallback onEditPressed,
-    bool isPassword,
-  ) {
+  Widget buildEditableField(TextEditingController controller, String labelText,
+      {TextInputType? keyboardType}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: Column(
@@ -192,8 +196,7 @@ class _SPAddItemsState extends State<SPAddItems> {
             ),
             child: TextField(
               controller: controller,
-              obscureText: isPassword,
-              readOnly: !isEditMode,
+              keyboardType: keyboardType,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -207,5 +210,3 @@ class _SPAddItemsState extends State<SPAddItems> {
     );
   }
 }
-
-
