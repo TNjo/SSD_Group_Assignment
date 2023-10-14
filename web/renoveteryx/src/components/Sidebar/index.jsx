@@ -58,12 +58,6 @@ function SideBar({ menu }) {
             <span className="sidebar-item-label" onClick={handleLogout}>
               Logout
             </span>
-            <img
-              src={LogoutIcon}
-              alt="icon-logout"
-              className="sidebar-item-icon"
-              onClick={handleLogout}
-            />
           </div>
         </div>
       </div>
