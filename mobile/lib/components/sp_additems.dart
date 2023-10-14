@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 
 class SPAddItems extends StatefulWidget {
-  const SPAddItems({super.key});
+  final Map<String, dynamic> userData;
+  SPAddItems({required this.userData, Key? key}) : super(key: key);
 
   @override
   State<SPAddItems> createState() => _SPAddItemsState();

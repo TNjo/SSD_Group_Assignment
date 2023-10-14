@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/sp_additems.dart';
 import 'package:mobile/sp_homepage.dart';
 import 'package:mobile/sp_orderspage.dart';
 import 'package:mobile/sp_profilepage.dart';
@@ -27,8 +28,8 @@ class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _motionTabBarController = MotionTabBarController(
-      initialIndex: 1,
-      length: 3,
+      initialIndex: 0,
+      length: 4,
       vsync: this,
     );
   }
@@ -46,13 +47,15 @@ class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin {
       bottomNavigationBar: MotionTabBar(
         controller: _motionTabBarController,
         initialSelectedTab: "Home",
-        labels: const ["Profile", "Home", "Orders"],
+        labels: const ["Home","Profile", "My Shop","Orders"],
         icons: const [
-          Icons.person,
           Icons.home,
+          Icons.person,
+          Icons.shop,
           Icons.shopping_basket,
         ],
         badges: [
+          null,
           null,
           null,
           const MotionBadgeWidget(
@@ -85,8 +88,9 @@ class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin {
         physics: NeverScrollableScrollPhysics(),
         controller: _motionTabBarController,
         children: <Widget>[
-          SPProfilePage(userData: userData), // Pass userData to Profile Page
           SPHomePage(userData: userData), // Pass userData to Home Page
+          SPProfilePage(userData: userData), // Pass userData to Profile Page
+          SPAddItems(userData: userData),
           SPOrdersPage(userData: userData), // Pass userData to Orders Page
         ],
       ),
