@@ -57,9 +57,9 @@ class _SMCartState extends State<SMCartPage> {
         }).toList(),
         'orderid': generateOrderId(), // Implement this method
         'sitemanager': managerName, // Replace with your data source
-        'status': 'Pending', // Initial status
+        'status': 1, // Pending (1)
         'supplier': '', // Replace with your data source
-        'totalPrice': '', // Implement this method
+        'totalPrice': null, // Implement this method
       };
 
       // Add the order to the Firestore "orders" collection
