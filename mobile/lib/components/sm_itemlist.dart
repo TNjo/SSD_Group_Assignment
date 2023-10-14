@@ -15,7 +15,7 @@ class _SMItemlistState
   final TextEditingController _searchController = TextEditingController();
   List<String> items = [
     'Cement',
-    'Sand',
+    'Sands',
     'Blocks',
     'Rocks',
     'Wires',
