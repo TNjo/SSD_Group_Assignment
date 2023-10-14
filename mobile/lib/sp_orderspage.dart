@@ -2,7 +2,7 @@ import 'package:mobile/components/sp_ordercard.dart';
 import 'package:flutter/material.dart';
 
 class SPOrdersPage extends StatefulWidget {
-  const SPOrdersPage({super.key});
+  const SPOrdersPage({super.key, required Map<String, dynamic> userData});
 
   @override
   State<SPOrdersPage> createState() => _SPOrdersPageState();
