@@ -25,6 +25,8 @@ import MyOrders from "./pages/MyOrders";
 import SiteManagers from "./pages/SiteManagers";
 import Sites from "./pages/Sites";
 import AddSites from "./pages/AddSites";
+import ProcurementManager from "./pages/Orders";
+import OrderDetails from "./pages/Orders/OrderDetails";
 
 function App() {
   const router = createBrowserRouter([
@@ -123,6 +125,14 @@ function App() {
     {
       path: "/register/admin",
       element: <Signup />,
+    },,
+    {
+      path: "/pm",
+      element: <ProcurementManager/>,
+    },,
+    {
+      path: "/pm/:id",
+      element: <OrderDetails />,
     },
   ]);
   return (
