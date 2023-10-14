@@ -1,36 +1,36 @@
+import 'package:flutter/material.dart';
 import 'package:mobile/sp_homepage.dart';
 import 'package:mobile/sp_orderspage.dart';
 import 'package:mobile/sp_profilepage.dart';
-import 'package:flutter/material.dart';
 import 'package:motion_tab_bar_v2/motion-badge.widget.dart';
 import 'package:motion_tab_bar_v2/motion-tab-bar.dart';
 import 'package:motion_tab_bar_v2/motion-tab-controller.dart';
 
 class SPNavBar extends StatefulWidget {
-  final int initialTabIndex;
-  final Map<String, dynamic> userData; // Add this line
+  final Map<String, dynamic> userData;
 
-  SPNavBar({this.initialTabIndex = 0, required this.userData}); // Add `required` to userData parameter
+  SPNavBar({required this.userData});
 
   @override
-  State<SPNavBar> createState() => _SPNavBarState();
+  State<SPNavBar> createState() => _SPNavBarState(userData: userData);
 }
 
+class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin {
+  MotionTabBarController? _motionTabBarController;
+ // Initialize with a default value
 
-class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin{
-   MotionTabBarController? _motionTabBarController;
-  int _selectedTabIndex = 1;
-  int _receivedArgument = 1; // Initialize with a default value
+  final Map<String, dynamic> userData;
+
+  _SPNavBarState({required this.userData});
 
   @override
   void initState() {
     super.initState();
     _motionTabBarController = MotionTabBarController(
-      initialIndex: _receivedArgument, // Use the received argument as initial index
+      initialIndex: 1,
       length: 3,
       vsync: this,
     );
-    _selectedTabIndex = _receivedArgument; // Set initial index based on received argument
   }
 
   @override
@@ -41,21 +41,12 @@ class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    final dynamic argument = ModalRoute.of(context)?.settings.arguments;
-
-    // Wrap the received argument update inside setState
-    if (argument != null && argument is int) {
-      setState(() {
-        _receivedArgument = argument; // Update received argument
-        print("Received Argument: $_receivedArgument");
-      });
-    }
-
+    print("userData: ${widget.userData}");
     return Scaffold(
       bottomNavigationBar: MotionTabBar(
         controller: _motionTabBarController,
         initialSelectedTab: "Home",
-        labels: const ["Profile","Home","Orders"],
+        labels: const ["Profile", "Home", "Orders"],
         icons: const [
           Icons.person,
           Icons.home,
@@ -86,11 +77,7 @@ class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin{
         tabBarColor: Color.fromARGB(255, 248, 204, 57),
         onTabItemSelected: (int value) {
           setState(() {
-            _selectedTabIndex = value; // Update _selectedTabIndex
             _motionTabBarController!.index = value;
-            print("Selected Tab Index: $_selectedTabIndex");
-            _receivedArgument = _selectedTabIndex;
-            print("Received Argument: $_receivedArgument");
           });
         },
       ),
@@ -98,9 +85,9 @@ class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin{
         physics: NeverScrollableScrollPhysics(),
         controller: _motionTabBarController,
         children: <Widget>[
-           SPProfilePage(), // Profile Page
-           SPHomePage(), // Home Page
-           SPOrdersPage(), // Orders Page
+          SPProfilePage(userData: userData), // Pass userData to Profile Page
+          SPHomePage(userData: userData), // Pass userData to Home Page
+          SPOrdersPage(userData: userData), // Pass userData to Orders Page
         ],
       ),
     );
