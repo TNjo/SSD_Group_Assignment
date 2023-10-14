@@ -1,48 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SPProfilePage extends StatefulWidget {
-  const SPProfilePage({super.key});
+  final Map<String, dynamic> userData;
+
+  SPProfilePage({required this.userData, Key? key}) : super(key: key);
 
   @override
-  State<SPProfilePage> createState() => _SPProfilePageState();
+  _SPProfilePageState createState() => _SPProfilePageState();
 }
 
 class _SPProfilePageState extends State<SPProfilePage> {
-  // Define variables to hold user details
-  String supplierName = 'John Doe'; // Example initial values
-  String email = 'johndoe@example.com';
-  String password = 'Site A';
-  String contact = '123-456-7890';
-  String address = 'ACME Corporation';
+  String supplierName = ''; // Example initial values
+  String email = '';
+  String password = '';
+  String contact = '';
+  String address = '';
 
-  // Define a TextEditingController for each input field
   TextEditingController supplierNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
   TextEditingController contactController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
 
-
-  // Keep track of edit mode for each field
   bool supplierNameEditMode = false;
   bool emailEditMode = false;
   bool passwordEditMode = false;
-  bool contactEditMode = false; 
+  bool contactEditMode = false;
   bool addressEditMode = false;
 
   @override
   void initState() {
     super.initState();
-    // Initialize the TextEditingControllers with existing user details
-    supplierNameController.text = supplierName;
-    emailController.text = email;
-    passwordController.text = password;
-    addressController.text = address;
-    contactController.text = contact;    
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final firestore = FirebaseFirestore.instance;
+
+      firestore
+          .collection('suppliers')
+          .where('userId', isEqualTo: user.uid)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          final userDoc = querySnapshot.docs[0].data() as Map<String, dynamic>;
+
+          setState(() {
+            email = userDoc['email'] ?? '';
+            password = userDoc['password'] ?? '';
+            supplierName = userDoc['supplierName'] ?? '';
+            contact = userDoc['contact'] ?? '';
+            address = userDoc['address'] ?? '';
+
+            emailController.text = email;
+            passwordController.text = password;
+            supplierNameController.text = supplierName;
+            contactController.text = contact;
+            addressController.text = address;
+          });
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print("user: ${widget.userData}");
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -56,9 +80,8 @@ class _SPProfilePageState extends State<SPProfilePage> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.arrow_back), // Add a back button icon
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                // Navigate back to the previous screen when the button is pressed
                 Navigator.pop(context);
               },
             );
@@ -70,8 +93,7 @@ class _SPProfilePageState extends State<SPProfilePage> {
         children: [
           const SizedBox(height: 30.0),
           Align(
-            alignment:
-                Alignment.topCenter, // Align the container to the top center
+            alignment: Alignment.topCenter,
             child: Column(
               children: [
                 Container(
@@ -83,8 +105,14 @@ class _SPProfilePageState extends State<SPProfilePage> {
                   ),
                   child: Center(
                     child: Text(
-                      supplierNameController.text.isNotEmpty ? supplierNameController.text[0] : '',
-                      style: TextStyle(fontSize: 38.0,color: Colors.white,fontWeight: FontWeight.bold,),
+                      supplierNameController.text.isNotEmpty
+                          ? supplierNameController.text[0]
+                          : '',
+                      style: TextStyle(
+                        fontSize: 38.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -99,12 +127,9 @@ class _SPProfilePageState extends State<SPProfilePage> {
               ],
             ),
           ),
-          Container(
-            
-          ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.only(top: 20.0), // Add spacing here
+              padding: EdgeInsets.only(top: 20.0),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +143,7 @@ class _SPProfilePageState extends State<SPProfilePage> {
                           supplierNameEditMode = !supplierNameEditMode;
                         });
                       },
-                      false
+                      false,
                     ),
                     buildEditableField(
                       emailController,
@@ -129,7 +154,7 @@ class _SPProfilePageState extends State<SPProfilePage> {
                           emailEditMode = !emailEditMode;
                         });
                       },
-                      false
+                      false,
                     ),
                     buildEditableField(
                       passwordController,
@@ -152,7 +177,7 @@ class _SPProfilePageState extends State<SPProfilePage> {
                         });
                       },
                       false,
-                    ),                    
+                    ),
                     buildEditableField(
                       contactController,
                       'Contact',
@@ -164,82 +189,145 @@ class _SPProfilePageState extends State<SPProfilePage> {
                       },
                       false,
                     ),
-                    SizedBox(height: 37.0),
+                    SizedBox(height: 16.0),
                   ],
                 ),
               ),
             ),
           ),
+          Center(
+            child: Column(
+              children: [
+                const SizedBox(height: 14.0),
+                SizedBox(
+                  width: 150.0,
+                  height: 50.0,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      updateProfile();
+                    },
+                    backgroundColor: Color.fromARGB(255, 90, 121, 141),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: const Text(
+                      'Update',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 45.0),
+              ],
+            ),
+          )
         ],
       ),
     );
   }
 
-Widget buildEditableField(
-  TextEditingController controller,
-  String labelText,
-  bool isEditMode,
-  VoidCallback onEditPressed,
-  bool isPassword, // Add a boolean flag to indicate if it's a password field
-) {
-  return Padding(
-    padding: EdgeInsets.only(top: 3.0, bottom: 0.0, left: 20.0, right: 20.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              labelText,
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
+  Widget buildEditableField(
+    TextEditingController controller,
+    String labelText,
+    bool isEditMode,
+    VoidCallback onEditPressed,
+    bool isPassword,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(top: 3.0, bottom: 0.0, left: 20.0, right: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                labelText,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            IconButton(
-              icon: Icon(isEditMode ? Icons.done : Icons.edit, color: Color.fromARGB(255, 48, 70, 88),),
-              onPressed: () {
-                onEditPressed();
-                if (isEditMode) {
-                  // Save the edited value to your data model or perform any other action.
-                  // You can use the controller to get the updated value.
-                  final editedValue = controller.text;
-                  print('Edited value: $editedValue');
-                }
-              },
-            ),
-          ],
-        ),
-        Container(
-          width: 360.0, // Set the desired width
-          height: 45.0, // Set the desired height
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.0),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 2),
+              IconButton(
+                icon: Icon(
+                  isEditMode ? Icons.done : Icons.edit,
+                  color: Color.fromARGB(255, 48, 70, 88),
+                ),
+                onPressed: () {
+                  onEditPressed();
+                  if (isEditMode) {
+                    final editedValue = controller.text;
+                    print('Edited value: $editedValue');
+                  }
+                },
               ),
             ],
           ),
-          child: TextField(
-            controller: controller,
-            obscureText: isPassword, // Add this line to obscure the text if it's a password field
-            readOnly: !isEditMode,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
+          Container(
+            width: 360.0,
+            height: 45.0,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: TextField(
+              controller: controller,
+              obscureText: isPassword,
+              readOnly: !isEditMode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
               ),
             ),
           ),
-        ),
-        SizedBox(height: 16.0),
-      ],
-    ),
-  );
-}
+          SizedBox(height: 16.0),
+        ],
+      ),
+    );
+  }
+
+  Future<void> updateProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+      final firestore = FirebaseFirestore.instance;
+
+      final updateEmail = emailController.text;
+      final updatePassword = passwordController.text;
+      final updatedSupplierName = supplierNameController.text;
+      final updatedContact = contactController.text;
+      final updatedAddress = addressController.text;
+
+      final userDocsQuery = firestore
+          .collection('suppliers')
+          .where('userId', isEqualTo: userId);
+
+      final userDocsSnapshot = await userDocsQuery.get();
+
+      if (userDocsSnapshot.docs.isNotEmpty) {
+        final userDocRef = userDocsSnapshot.docs[0].reference;
+
+        await userDocRef.update({
+          'email': updateEmail,
+          'password': updatePassword,
+          'supplierName': updatedSupplierName,
+          'contact': updatedContact,
+          'address': updatedAddress,
+        });
+      } else {
+        print('Error: Document for user does not exist.');
+      }
+    }
+  }
 }

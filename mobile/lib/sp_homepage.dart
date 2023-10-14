@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SPHomePage extends StatefulWidget {
-  const SPHomePage({super.key});
+  final Map<String, dynamic> userData;
+  const SPHomePage({required this.userData,Key? key}):super(key: key);
 
   @override
   State<SPHomePage> createState() => _SPHomePageState();
@@ -187,8 +188,8 @@ class _SPHomePageState extends State<SPHomePage> {
                     height: 50.0,
                     child: FloatingActionButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/sm_navbar',
-                            arguments: 2);
+                        // Navigator.pushNamed(context, '/sm_navbar',
+                        //     arguments: 2);
                       },
                       backgroundColor: Color.fromARGB(255, 90, 121, 141),
                       shape: RoundedRectangleBorder(

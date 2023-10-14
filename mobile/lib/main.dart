@@ -10,6 +10,7 @@ import 'package:mobile/sm_cartpage.dart';
 import 'package:mobile/sm_homepage.dart';
 import 'package:mobile/sm_orderspage.dart';
 import 'package:mobile/sm_profilepage.dart';
+import 'package:mobile/sp_profilepage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +66,11 @@ class MyApp extends StatelessWidget {
           // Retrieve the user data from arguments
           final Map<String, dynamic> userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
           return SMProfilePage(userData: userData);
+        },
+        '/sp_profile': (context) {
+          // Retrieve the user data from arguments
+          final Map<String, dynamic> userData = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return SPProfilePage(userData: userData);
         },
         '/sm_cart': (context) {
           // Retrieve the user data and selectedItems from arguments
