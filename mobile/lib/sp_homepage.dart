@@ -179,35 +179,6 @@ class _SPHomePageState extends State<SPHomePage> {
                 },
               ),
             ),
-            Center(
-              child: Column(
-                children: [
-                  const SizedBox(height: 14.0),
-                  SizedBox(
-                    width: 150.0,
-                    height: 50.0,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        // Navigator.pushNamed(context, '/sm_navbar',
-                        //     arguments: 2);
-                      },
-                      backgroundColor: Color.fromARGB(255, 90, 121, 141),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      child: const Text(
-                        'Add to Cart',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 43.0),
-                ],
-              ),
-            )
           ],
         ),
       ),
