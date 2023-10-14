@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:mobile/components/sm_itemlist.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart'; // Import the fluttertoast package
+import 'package:mobile/components/sm_itemlist.dart';
 
 class SMCartPage extends StatefulWidget {
   final List<String> selectedItems;
@@ -66,6 +67,16 @@ class _SMCartState extends State<SMCartPage> {
         print('Order placed with ID: ${docRef.id}');
         // Clear the itemDataList or update it as needed
         itemDataList.clear();
+
+        // Show a toast message for successful order placement
+        Fluttertoast.showToast(
+          msg: 'Order added successfully!',
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+          toastLength: Toast.LENGTH_LONG,
+        );
       }).catchError((error) {
         print('Error placing order: $error');
       });
@@ -210,7 +221,6 @@ class _SMCartState extends State<SMCartPage> {
                       placeOrder();
                     },
                     child: Text("Place Order"),
-                    
                   ),
                 ],
               ),
@@ -225,4 +235,3 @@ class ItemData {
 
   ItemData({required this.name, required this.quantity});
 }
-
