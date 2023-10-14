@@ -17,7 +17,7 @@ class _SPAddItemsState extends State<SPAddItems> {
   TextEditingController priceController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
 
-  Future<void> updateProfile(List<Map<String, dynamic>> updatedItems) async {
+  Future<void> updateItems(List<Map<String, dynamic>> updatedItems) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userId = user.uid;
@@ -32,14 +32,13 @@ class _SPAddItemsState extends State<SPAddItems> {
         final userDocRef = userDocsSnapshot.docs[0].reference;
 
         await userDocRef.update({
-          'items': updatedItems,
+          'items': FieldValue.arrayUnion(updatedItems),
         });
       } else {
-        print('Error: Document for user does not exist.');
+        print('Error: Document for the user does not exist.');
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,13 +110,15 @@ class _SPAddItemsState extends State<SPAddItems> {
                       'quantity': quantity,
                     };
 
-                    // Create a copy of the existing items list and add the new item
-                    final updatedItems = List<Map<String, dynamic>>.from(
-                        widget.userData['items'] ?? []);
-                    updatedItems.add(newItem);
+                    // Retrieve the existing items list
+                    final existingItems =
+                        List<Map<String, dynamic>>.from(widget.userData['items'] ?? []);
+
+                    // Add the new item to the existing list
+                    existingItems.add(newItem);
 
                     // Update the profile with the updated items
-                    await updateProfile(updatedItems);
+                    await updateItems(existingItems);
 
                     print('Item Name: $itemName');
                     print('Description: $description');
@@ -210,3 +211,4 @@ class _SPAddItemsState extends State<SPAddItems> {
     );
   }
 }
+
