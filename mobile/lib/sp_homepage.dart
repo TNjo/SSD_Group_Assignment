@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:searchbar_animation/searchbar_animation.dart';
 class SPHomePage extends StatefulWidget {
   final Map<String, dynamic> userData;
   const SPHomePage({required this.userData,Key? key}):super(key: key);
@@ -9,7 +9,7 @@ class SPHomePage extends StatefulWidget {
 }
 
 class _SPHomePageState extends State<SPHomePage> {
-  // final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   List<String> items = [
     'Cement',
     'Sand',
@@ -20,6 +20,14 @@ class _SPHomePageState extends State<SPHomePage> {
   ];
 
   List<bool> selectedItems = List.generate(6, (index) => false);
+  List<String> filteredItems = []; 
+  
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the filtered items list with all items
+    filteredItems = items;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,82 +53,82 @@ class _SPHomePageState extends State<SPHomePage> {
           },
         ),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 5.0),
-            Padding(
-              padding: EdgeInsets.only(top: 16.0, bottom: 16.0, left: 30.0, right:30.0),
-              child: Container(
-                height: 200,
-                padding: const EdgeInsets.all(3.0),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color.fromARGB(255, 68, 68, 68),
-                      Color.fromARGB(255, 248, 204, 57),
+            const SizedBox(height: 10.0),
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color.fromARGB(199, 158, 158, 158),
+                    Color.fromARGB(136, 96, 125, 139)
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(width: 20.0),
+                      const Text(
+                        'Welcome',
+                        style: TextStyle(
+                          fontFamily: 'Open Sans',
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.68,
+                          color: Color(0xff000000),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 12.0,
+                      ),
+                      Image.asset(
+                        "assets/welcome_img.png",
+                        width: 180.0,
+                        height: 120.0,
+                        scale: 0.1,
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: Container(
-                  width: double.infinity, // Match the screen width
-                  padding: const EdgeInsets.all(16.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 80.0, // Decrease the circle size
-                          height: 80.0, // Decrease the circle size
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color.fromARGB(255, 217,217,217,),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'B',
-                              style: TextStyle(
-                                fontSize: 38.0,
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 15.0),
-                        Text(
-                          'BrickShop',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Address',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Contact No',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                  SearchBarAnimation(
+                    enableButtonBorder: true,
+                    buttonBorderColour: Color.fromARGB(255, 48, 116, 161),
+                    textEditingController: _searchController,
+                    isOriginalAnimation: false,
+                    trailingWidget: const Icon(Icons.search),
+                    secondaryButtonWidget: const Icon(
+                      Icons.cancel,
+                      color: Color.fromARGB(255, 100, 147, 170),
                     ),
+                    buttonWidget: const Icon(Icons.search),
+                    searchBoxWidth: 340.0,
+                    onFieldSubmitted: (String value) {
+                      debugPrint('onFieldSubmitted value $value');
+                    },
+                    onChanged: (value) {
+                      // Filter the items based on the search query
+                      setState(() {
+                        filteredItems = items
+                            .where((item) =>
+                                item.toLowerCase().contains(value.toLowerCase()))
+                            .toList();
+                      });
+                    },
                   ),
-                ),
+                ],
               ),
             ),
-            //const SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Container(
               color: Colors.grey, // Gray background color
               child: Container(
