@@ -51,7 +51,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
       .get()
       .then((QuerySnapshot querySnapshot) {
         if (querySnapshot.docs.isNotEmpty) {
-          final userDoc = querySnapshot.docs[0];
+          final userDoc = querySnapshot.docs[0].data() as Map<String, dynamic>;
           setState(() {
             email = userDoc['email'] ?? '';
             password = userDoc['password'] ?? '';

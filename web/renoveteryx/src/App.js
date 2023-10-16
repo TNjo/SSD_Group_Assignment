@@ -7,12 +7,13 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import { ToastContextProvider } from "../src/Context/ToastContext";
 import SideBar from "./components/Sidebar";
 import sidebar_menu from "./constants/sidebar-menu";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "./App.css";
-import Orders from "./pages/Orders";
+import Orders from "./pages/StaffPM";
 import Login from "./pages/Login/Login";
 
 
@@ -23,13 +24,23 @@ import MyOrders from "./pages/MyOrders";
 import SiteManagers from "./pages/SiteManagers";
 import Sites from "./pages/Sites";
 import AddSites from "./pages/AddSites";
-import ProcurementManager from "./pages/Orders";
-import OrderDetails from "./pages/Orders/OrderDetails";
 import AdminSuppliers from "./pages/AdminSuppliers";
 import AdminOrderDetails from "./pages/AdminOrderDetails";
 import PendingOrders from "./pages/PendingOrders";
 import Signup from "./pages/SignUp";
 import Home from "./pages/Home";
+
+
+
+
+
+
+
+
+
+
+import ProcurementManager from "./pages/Orders";
+import OrderDetails from "./pages/Orders/OrderDetails";
 
 function App() {
   const router = createBrowserRouter([
@@ -136,21 +147,21 @@ function App() {
     {
       path: "/register/admin",
       element: <Signup />,
-    },
-    ,
+    },,
     {
       path: "/pm",
-      element: <ProcurementManager />,
-    },
-    ,
+      element: <ProcurementManager/>,
+    },,
     {
-      path: "/pm/:id",
+      path: "/pm/:docId",
       element: <OrderDetails />,
     },
   ]);
   return (
     <AuthContext>
-      <RouterProvider router={router}></RouterProvider>
+      <ToastContextProvider>
+        <RouterProvider router={router}></RouterProvider>
+      </ToastContextProvider>
     </AuthContext>
   );
 }

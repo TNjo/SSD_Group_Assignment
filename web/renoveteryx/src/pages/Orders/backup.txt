@@ -1,0 +1,120 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { getFirestore, doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import Table from 'react-bootstrap/Table';
+import Card from 'react-bootstrap/Card';
+
+function OrderDetails() {
+    const { docId } = useParams();
+    const [orderData, setOrderData] = useState(null);
+    const [supplierData, setSuppliersData] = useState(null);
+
+    useEffect(() => {
+        fetchOrderData();
+        fetchSupplierData();
+    }, [docId]);
+
+    const fetchOrderData = async () => {
+        const db = getFirestore();
+        const orderRef = doc(db, 'orders', docId);
+
+        try {
+            const orderSnapshot = await getDoc(orderRef);
+            if (orderSnapshot.exists()) {
+                const data = orderSnapshot.data();
+                setOrderData(data);
+            } else {
+                console.log('Order not found.');
+            }
+        } catch (error) {
+            console.error('Error fetching order data:', error);
+        }
+    };
+
+    // Fetch data from Firestore
+    const fetchSupplierData = async () => {
+        try {
+            const db = getFirestore();
+    
+            const suppliersCollection = collection(db, "suppliers");
+            const suppliersSnapshot = await getDocs(suppliersCollection);
+    
+            const suppliers = suppliersSnapshot.docs.map((doc) => {
+                const data = doc.data();
+                data.id = doc.id;
+                return data;
+            });
+    
+            // Set the suppliers data to the state
+            setSuppliersData(suppliers);
+            console.log(suppliers)
+        } catch (error) {
+            // Handle errors here
+            console.error("Error fetching supplier data:", error);
+        }
+    };
+
+    console.log(supplierData)
+    
+
+    if (!orderData) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <div>
+            <h2>Order Details</h2>
+            <Card>
+                <Card.Body>
+                    <Card.Title>Construction Site: {orderData.constructionSite}</Card.Title>
+                    <Card.Text>Date: {new Date(orderData.date.seconds * 1000).toLocaleString()}</Card.Text>
+                    <Card.Text>Order ID: {orderData.orderid}</Card.Text>
+                    <Card.Text>Site Manager: {orderData.sitemanager}</Card.Text>
+                    <Card.Text>Status: {orderData.status}</Card.Text>
+                    <Card.Text>Supplier: {orderData.supplier}</Card.Text>
+                    <Card.Text>Total Price: {orderData.totalPrice}</Card.Text>
+                </Card.Body>
+            </Card>
+            {supplierData && (
+                <div>
+                    <h3>Supplier Details</h3>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Supplier Name</th>
+                                <th>Contact Email</th>
+                                <th>Contact Phone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{supplierData.supplierName}</td>
+                                <td>{supplierData.contactEmail}</td>
+                                <td>{supplierData.contactPhone}</td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                </div>
+            )}
+            <h3>Items</h3>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {orderData.items.map((item, index) => (
+                        <tr key={index}>
+                            <td>{item.name}</td>
+                            <td>{item.quantity}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        </div>
+    );
+}
+
+export default OrderDetails;

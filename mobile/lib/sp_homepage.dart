@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:searchbar_animation/searchbar_animation.dart';
 class SPHomePage extends StatefulWidget {
   final Map<String, dynamic> userData;
-  const SPHomePage({required this.userData,Key? key}):super(key: key);
+  const SPHomePage({required this.userData, Key? key}) : super(key: key);
 
   @override
   State<SPHomePage> createState() => _SPHomePageState();
@@ -10,23 +12,37 @@ class SPHomePage extends StatefulWidget {
 
 class _SPHomePageState extends State<SPHomePage> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> items = [
-    'Cement',
-    'Sand',
-    'Blocks',
-    'Rocks',
-    'Wires',
-    'Pipes',
-  ];
+  List<String> items = [];
+  List<String> filteredItems = [];
 
-  List<bool> selectedItems = List.generate(6, (index) => false);
-  List<String> filteredItems = []; 
-  
   @override
   void initState() {
     super.initState();
     // Initialize the filtered items list with all items
-    filteredItems = items;
+    retrieveItems(); // Load items from Firestore
+  }
+
+  void retrieveItems() async {
+    // Assuming you have the user's UID in 'userData'
+    final userUid = widget.userData['uid'];
+
+    // Retrieve the relevant supplier document based on the user's UID
+    final supplierCollection = FirebaseFirestore.instance.collection('suppliers');
+    final userSupplierDocument = supplierCollection.doc(userUid);
+
+    final docSnapshot = await userSupplierDocument.get();
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data() as Map<String, dynamic>?;
+      if (data != null) {
+        // Get the 'items' field from the supplier document
+        if (data.containsKey('items') && data['items'] is List) {
+          setState(() {
+            items = List<String>.from(data['items']);
+            filteredItems = items;
+          });
+        }
+      }
+    }
   }
 
   @override
@@ -44,9 +60,8 @@ class _SPHomePageState extends State<SPHomePage> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.arrow_back), // Add a back button icon
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                // Navigate back to the previous screen when the button is pressed
                 Navigator.pop(context);
               },
             );
@@ -153,34 +168,43 @@ class _SPHomePageState extends State<SPHomePage> {
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: items.length,
+                itemCount: filteredItems.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(
                         vertical: 10.0, horizontal: 12.0),
                     padding: const EdgeInsets.all(16.0),
-                    height: 50.0, // Set the desired height
+                    height: 50.0,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                          10.0), // Increase the corner radius
+                      borderRadius: BorderRadius.circular(10.0),
                       boxShadow: const [
                         BoxShadow(
-                          color: Color(0x5f000000), // Increase shadow opacity
-                          offset: Offset(0.0, 4.0), // Increase shadow offset
-                          blurRadius: 12.0, // Increase shadow blur radius
+                          color: Color(0x5f000000),
+                          offset: Offset(0.0, 4.0),
+                          blurRadius: 12.0,
                         ),
                       ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(items[index],
+                        Text(filteredItems[index],
                             style: const TextStyle(fontSize: 16.0)),
-                            Spacer(),
-                        Icon(Icons.edit),
+                        Spacer(),
+                        GestureDetector(
+                          onTap: () {
+                            // Implement your edit action
+                          },
+                          child: Icon(Icons.edit),
+                        ),
                         const SizedBox(width: 10.0),
-                        Icon(Icons.delete)
+                        GestureDetector(
+                          onTap: () {
+                            // Implement your delete action
+                          },
+                          child: Icon(Icons.delete),
+                        ),
                       ],
                     ),
                   );
