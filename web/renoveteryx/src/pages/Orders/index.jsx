@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getFirestore, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { calculateRange, sliceData } from "../../utils/table-pagination";
 import { format, fromUnixTime } from "date-fns";
 
@@ -92,13 +98,12 @@ function ProcurementManager() {
           <table className="table table-striped">
             <thead>
               <tr>
+                <th>Order ID</th>
                 <th>Construction Site</th>
                 <th>Date</th>
                 <th>Site Manager</th>
-                <th>Status</th>
                 <th>Supplier</th>
                 <th>Total Price</th>
-                <th>Order ID</th>
                 <th>Items</th>
                 <th>Actions</th>
               </tr>
@@ -107,7 +112,12 @@ function ProcurementManager() {
               {orders.map((order) => (
                 <tr key={order.id}>
                   <td>{order.constructionSite}</td>
-                  <td>{format(fromUnixTime(order.date.seconds), "MM/dd/yyyy HH:mm:ss")}</td>
+                  <td>
+                    {format(
+                      fromUnixTime(order.date.seconds),
+                      "MM/dd/yyyy HH:mm:ss"
+                    )}
+                  </td>
                   <td>{order.sitemanager}</td>
                   <td>{order.status}</td>
                   <td>{order.supplier}</td>

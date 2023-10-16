@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DashboardHeader from "../../components/DashboardHeader";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { calculateRange, sliceData } from "../../utils/table-pagination";
+import { fetchSiteManagersData } from "../../firebaseServices/firebaseServices";
 import "../styles.css";
 
 function SiteManagers() {
@@ -9,25 +9,23 @@ function SiteManagers() {
   const [siteManagers, setSiteManagers] = useState([]);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState([]);
-  const db = getFirestore();
-
-  const fetchData = async () => {
-    const siteManagersCollection = collection(db, "siteManagers");
-    const siteManagersSnapshot = await getDocs(siteManagersCollection);
-    const siteManagersData = siteManagersSnapshot.docs.map((doc) => doc.data());
-    // Set the site managers data to the state
-    setSiteManagers(siteManagersData);
-
-    // Calculate pagination
-    setPagination(calculateRange(siteManagersData, 5));
-    setSiteManagers(sliceData(siteManagersData, page, 5));
-  };
 
   useEffect(() => {
     fetchData();
   }, [page]);
 
-  // Search
+  const fetchData = async () => {
+    try {
+      const siteManagersData = await fetchSiteManagersData();
+      setSiteManagers(siteManagersData);
+
+      setPagination(calculateRange(siteManagersData, 5));
+      setSiteManagers(sliceData(siteManagersData, page, 5));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const handleSearch = (event) => {
     setSearch(event.target.value);
     if (event.target.value === "") {
@@ -45,7 +43,6 @@ function SiteManagers() {
     }
   };
 
-  // Change Page
   const handleChangePage = (new_page) => {
     setPage(new_page);
     setSiteManagers(sliceData(siteManagers, new_page, 5));
