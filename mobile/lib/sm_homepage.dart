@@ -14,7 +14,7 @@ class SMHomePage extends StatefulWidget {
 class _SMHomePageState extends State<SMHomePage> {
   final TextEditingController _searchController = TextEditingController();
   List<String> items = [
-    'Cement',
+    'Cements',
     'Sands',
     'Blocks',
     'Rocks',
