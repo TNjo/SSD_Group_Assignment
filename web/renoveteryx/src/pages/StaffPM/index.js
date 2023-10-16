@@ -6,11 +6,30 @@ import { format, fromUnixTime } from "date-fns";
 
 import "../styles.css";
 
+// Function to map status numbers to status text
+const getStatusText = (status) => {
+  switch (status) {
+    case 1:
+      return 'Pending';
+    case 2:
+      return 'Send to Supplier';
+    case 3:
+      return 'Send to Manager';
+    case 4:
+      return 'Supplier Accepted';
+    case 5:
+      return 'Supplier Rejected';
+    default:
+      return 'Unknown';
+  }
+};
+
 function ProcurementManager() {
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("All");
 
   // Initialize Firebase Firestore
   const db = getFirestore();
@@ -109,7 +128,7 @@ function ProcurementManager() {
                   <td>{order.constructionSite}</td>
                   <td>{format(fromUnixTime(order.date.seconds), "MM/dd/yyyy HH:mm:ss")}</td>
                   <td>{order.sitemanager}</td>
-                  <td>{order.status}</td>
+                  <td>{getStatusText(order.status)}</td>
                   <td>{order.supplier}</td>
                   <td>{order.totalPrice}</td>
                   <td>{order.orderid}</td>
