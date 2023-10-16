@@ -26,7 +26,8 @@ class _SMCartState extends State<SMCartPage> {
   String generateOrderId() {
     // Generate a unique order ID based on the current timestamp and a random number
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final random = (1000 + Random().nextInt(9000)).toString(); // Generates a 4-digit random number
+    final random = (1000 + Random().nextInt(9000))
+        .toString(); // Generates a 4-digit random number
     return '$timestamp$random';
   }
 
@@ -57,9 +58,10 @@ class _SMCartState extends State<SMCartPage> {
         }).toList(),
         'orderid': generateOrderId(), // Implement this method
         'sitemanager': managerName, // Replace with your data source
+        'sitemanagerId': widget.userData['uid'],
         'status': 1, // Pending (1)
         'supplier': '', // Replace with your data source
-        'totalPrice': null, // Implement this method
+        'totalPrice': 0, // Implement this method
       };
 
       // Add the order to the Firestore "orders" collection
@@ -113,6 +115,7 @@ class _SMCartState extends State<SMCartPage> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -206,7 +209,7 @@ class _SMCartState extends State<SMCartPage> {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: FloatingActionButton(
-                      backgroundColor: Color.fromARGB(255, 90, 121, 141),
+                      backgroundColor: Color.fromARGB(207, 49, 117, 163),
                       onPressed: () {
                         _toggleHomePage();
                       },
@@ -216,12 +219,27 @@ class _SMCartState extends State<SMCartPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 30.0),
                   ElevatedButton(
                     onPressed: () {
                       placeOrder();
                     },
-                    child: Text("Place Order"),
-                  ),
+                    style: ElevatedButton.styleFrom(
+                      primary: Color.fromARGB(
+                          255, 90, 121, 141), // Set the background color
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(20.0), // Apply rounded border
+                      ),
+                    ),
+                    child: Text(
+                      'Place Order',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

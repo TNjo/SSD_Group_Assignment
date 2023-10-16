@@ -2,16 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ApprovedOrdersCard extends StatelessWidget {
+  final Map<String, dynamic> userData;
+
+  ApprovedOrdersCard({Key? key, required this.userData}) : super(key: key);
+
+  String getStatusText(int status) {
+    switch (status) {
+            case 1:
+                return 'Pending';
+            case 2:
+                return 'Sent to Supplier';
+            case 3:
+                return 'Sent to Manager';
+            case 4:
+                return 'Supplier Accepted';
+            case 5:
+                return 'Supplier Rejected';
+            default:
+                return 'Unknown';
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('orders')
-          .where('status', isEqualTo: 'App') // Filter by status
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final orders = snapshot.data!.docs;
+          final orders = snapshot.data!.docs.where((orderDoc) {
+            final orderData = orderDoc.data() as Map<String, dynamic>;
+            // Filter orders with matching sitemanagerId and status 1, 2, or 3
+            return orderData['sitemanagerId'] == userData['uid'] && [4].contains(orderData['status']);
+          }).toList();
+
           return ListView.builder(
             itemCount: orders.length,
             itemBuilder: (context, index) {
@@ -43,6 +68,16 @@ class ApprovedOrdersCard extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.only(bottom: 8.0),
                           child: Text(
+                            'Order Id: ${order['orderid']}',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 8.0),
+                          child: Text(
                             'Items: ${order['items'].join(', ')}',
                             style: TextStyle(
                               fontSize: 16.0,
@@ -62,8 +97,38 @@ class ApprovedOrdersCard extends StatelessWidget {
                         ),
                         Container(
                           margin: EdgeInsets.only(bottom: 8.0),
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.black, // Set label color to black
+                              ),
+                              children: <TextSpan>[
+                                TextSpan(text: 'Status: '),
+                                TextSpan(
+                                  text: getStatusText(order['status']),
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 0, 129, 65), // Set status value color based on status
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 8.0),
                           child: Text(
-                            'Status: ${order['status']}',
+                            'Supplier: ${order['supplier']}',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            'Total Price: ${order['totalPrice']}',
                             style: TextStyle(
                               fontSize: 16.0,
                             ),
@@ -77,7 +142,8 @@ class ApprovedOrdersCard extends StatelessWidget {
                                 // View pending order logic
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromARGB(255, 93, 142, 189),
+                                backgroundColor:
+                                    Color.fromARGB(255, 93, 142, 189),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
@@ -89,12 +155,13 @@ class ApprovedOrdersCard extends StatelessWidget {
                                 // Cancel pending order logic
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromARGB(237, 204, 14, 0),
+                                backgroundColor:
+                                    Color.fromARGB(148, 7,114,60),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
                               ),
-                              child: Text('Cancel'),
+                              child: Text('Recieved'),
                             ),
                           ],
                         )
@@ -108,7 +175,10 @@ class ApprovedOrdersCard extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
-          return Container(height: 50,width: 50,);
+          return Container(
+            height: 50,
+            width: 50,
+          );
         }
       },
     );

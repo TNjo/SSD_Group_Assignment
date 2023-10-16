@@ -83,8 +83,8 @@ class _SMOrdersPageState extends State<SMOrdersPage> {
           const SizedBox(height: 30.0),
           Expanded(
             child: showPendingOrders
-                ? PendingOrdersCard() 
-                : ApprovedOrdersCard(),
+                ? PendingOrdersCard(userData: widget.userData)
+                : ApprovedOrdersCard(userData: widget.userData),
           ),
         ],
       ),
