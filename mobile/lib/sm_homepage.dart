@@ -187,7 +187,6 @@ class _SMHomePageState extends State<SMHomePage> {
                             selectedNames.add(filteredItems[i]);
                           }
                         }
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(

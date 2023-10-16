@@ -112,7 +112,7 @@ class _SPViewOrderState extends State<SPViewOrder> {
     return Scaffold(
       appBar: AppBar(
         title: Text('View Order'),
-        backgroundColor: Colors.yellow,
+        backgroundColor: const Color.fromARGB(255, 255, 208, 0),
       ),
       body: Column(
         children: [
@@ -221,6 +221,7 @@ class _SPViewOrderState extends State<SPViewOrder> {
               ),
             ),
           ),
+          // const SizedBox(height: 20.0),
           Container(
             padding: EdgeInsets.all(16.0),
             child: Row(
@@ -249,7 +250,7 @@ class _SPViewOrderState extends State<SPViewOrder> {
                     // Implement the Send New Questions button action
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.yellow),
+                    backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 255, 196, 0)),
                   ),
                   child: Text('Send New Questions',
                       style: TextStyle(fontSize: 16)),
@@ -257,6 +258,7 @@ class _SPViewOrderState extends State<SPViewOrder> {
               ],
             ),
           ),
+          const SizedBox(height: 45.0),
         ],
       ),
     );

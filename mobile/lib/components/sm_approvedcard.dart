@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class ApprovedOrdersCard extends StatelessWidget {
   final Map<String, dynamic> userData;
@@ -20,11 +21,12 @@ class ApprovedOrdersCard extends StatelessWidget {
                 return 'Supplier Rejected';
             default:
                 return 'Unknown';
-    };
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final DateFormat dateFormat = DateFormat("MMM d, y");
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('orders')
@@ -88,7 +90,7 @@ class ApprovedOrdersCard extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.only(bottom: 8.0),
                           child: Text(
-                            'Placed Date: ${order['date'].toString()}', // You should format the date as needed
+                            'Placed Date: ${dateFormat.format(order['date'].toDate())}',
                             style: const TextStyle(
                               fontSize: 16.0,
                             ),

@@ -51,7 +51,7 @@ class _SPNavBarState extends State<SPNavBar> with TickerProviderStateMixin {
         icons: const [
           Icons.home,
           Icons.person,
-          Icons.shop,
+          Icons.store,
           Icons.shopping_basket,
         ],
         badges: [
