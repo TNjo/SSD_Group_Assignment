@@ -110,6 +110,7 @@ export const fetchAllOrderData = async () => {
     return ordersData;
 }
 
+//fetch details of the site according to the location
 export const fetchSitesData = async (location) => {
     const db = getFirestore(app);
     const siteData = collection(db, "sites");

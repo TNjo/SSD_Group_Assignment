@@ -4,30 +4,30 @@ import ProductIcon from "../assets/icons/product.svg";
 import UserIcon from "../assets/icons/user.svg";
 
 const sidebar_menu = [
+  // {
+  //   id: 1,
+  //   icon: DashboardIcon,
+  //   path: "/",
+  //   title: "Dashboard",
+  // },
   {
     id: 1,
-    icon: DashboardIcon,
-    path: "/",
+    icon: ProductIcon,
+    path: "/pm",
     title: "Dashboard",
   },
-  {
-    id: 2,
-    icon: ProductIcon,
-    path: "/orders",
-    title: "Orders",
-  },
-  {
-    id: 3,
-    icon: ShippingIcon,
-    path: "/products",
-    title: "Approved Orders",
-  },
-  {
-    id: 4,
-    icon: UserIcon,
-    path: "/profile",
-    title: "My account",
-  },
+  // {
+  //   id: 2,
+  //   icon: ShippingIcon,
+  //   path: "/pm/:docId",
+  //   title: "Approved Orders",
+  // },
+  // {
+  //   id: 4,
+  //   icon: UserIcon,
+  //   path: "/profile",
+  //   title: "My account",
+  // },
 ];
 
 export default sidebar_menu;
