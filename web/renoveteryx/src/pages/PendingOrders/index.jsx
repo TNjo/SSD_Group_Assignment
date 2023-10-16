@@ -23,7 +23,7 @@ function MyOrders() {
     try {
       const ordersData = await fetchOrders();
 
-      const filteredOrders = ordersData.filter((order) => order.status === 3);
+      const filteredOrders = ordersData.filter((order) => order.status === 2);
 
       setOrders(filteredOrders);
 
@@ -69,7 +69,7 @@ function MyOrders() {
 
       <div className="dashboard-content-container">
         <div className="dashboard-content-header">
-          <h2>Suppliers List</h2>
+          <h2>Suppliers Pending Orders</h2>
           <div className="dashboard-content-search">
             <input
               type="text"
@@ -88,7 +88,7 @@ function MyOrders() {
                   <tr>
                     <th>Construction Site</th>
                     <th>Date</th>
-                    <th>Site Manager</th>
+                    <th>Supplier</th>
                     <th>Total Price</th>
                     <th>Items</th>
                     <th>Actions</th>
@@ -104,13 +104,14 @@ function MyOrders() {
                           "MM/dd/yyyy HH:mm:ss"
                         )}
                       </td>
-                      <td>{order.sitemanager}</td>
+                      <td>{order.supplier}</td>
                       <td>{order.totalPrice}</td>
                       <td>
                         <ul>
                           {order.items.map((item, index) => (
                             <li key={index}>
-                              {item.name} - Quantity: {item.quantity}
+                              {item.name}, Quantity: {item.quantity}, Price:
+                              {item.price}
                             </li>
                           ))}
                         </ul>

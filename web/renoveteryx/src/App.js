@@ -15,19 +15,32 @@ import "firebase/auth";
 import "./App.css";
 import Orders from "./pages/StaffPM";
 import Login from "./pages/Login/Login";
-import Signup from "./routes/signup";
-import Home from "./routes/home";
+
+
 import AuthContext from "./Context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import Viewitem from "./pages/ViewItem";
 import AdminHome from "./pages/AdminHome";
-import AllOrders from "./pages/AllOrders";
 import MyOrders from "./pages/MyOrders";
 import SiteManagers from "./pages/SiteManagers";
 import Sites from "./pages/Sites";
 import AddSites from "./pages/AddSites";
-import ProcurementManager from "./pages/StaffPM";
-import OrderDetails from "./pages/StaffPM/OrderDetails";
+import AdminSuppliers from "./pages/AdminSuppliers";
+import AdminOrderDetails from "./pages/AdminOrderDetails";
+import PendingOrders from "./pages/PendingOrders";
+import Signup from "./pages/SignUp";
+import Home from "./pages/Home";
+
+
+
+
+
+
+
+
+
+
+import ProcurementManager from "./pages/Orders";
+import OrderDetails from "./pages/Orders/OrderDetails";
 
 function App() {
   const router = createBrowserRouter([
@@ -56,14 +69,6 @@ function App() {
       ),
     },
     {
-      path: "/orders/:orderId",
-      element: (
-        <ProtectedRoute>
-          <Viewitem />,
-        </ProtectedRoute>
-      ),
-    },
-    {
       path: "/admin-home",
       element: (
         <ProtectedRoute>
@@ -88,10 +93,10 @@ function App() {
       ),
     },
     {
-      path: "/admin-allOrders",
+      path: "/admin-pendingOrders",
       element: (
         <ProtectedRoute>
-          <AllOrders />,
+          <PendingOrders />,
         </ProtectedRoute>
       ),
     },
@@ -112,6 +117,22 @@ function App() {
       ),
     },
     {
+      path: "/admin-Suppliers",
+      element: (
+        <ProtectedRoute>
+          <AdminSuppliers />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-ViewOrders/:orderId",
+      element: (
+        <ProtectedRoute>
+          <AdminOrderDetails />,
+        </ProtectedRoute>
+      ),
+    },
+    {
       path: "/login",
       element: <Login />,
     },
@@ -126,11 +147,11 @@ function App() {
     {
       path: "/register/admin",
       element: <Signup />,
-    }, ,
+    },,
     {
       path: "/pm",
-      element: <ProcurementManager />,
-    }, ,
+      element: <ProcurementManager/>,
+    },,
     {
       path: "/pm/:docId",
       element: <OrderDetails />,
