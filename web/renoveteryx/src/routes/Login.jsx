@@ -20,7 +20,7 @@ function Login() {
         const emailDomain = user.email.split("@")[1]; // Get the domain part of the email
 
         if (emailDomain === "gmail.com") {
-          navigate("/");
+          navigate("/pm");
         } else if (emailDomain === "example.com") {
           navigate("/admin-home");
         }

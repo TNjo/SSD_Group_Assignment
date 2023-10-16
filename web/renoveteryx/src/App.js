@@ -126,14 +126,20 @@ function App() {
     {
       path: "/register/admin",
       element: <Signup />,
-    }, ,
+    },
     {
       path: "/pm",
-      element: <ProcurementManager />,
-    }, ,
+      element:
+        <ProtectedRoute>
+          <ProcurementManager />,
+        </ProtectedRoute>
+    },
     {
       path: "/pm/:docId",
-      element: <OrderDetails />,
+      element:
+        <ProtectedRoute>
+          <OrderDetails />,
+        </ProtectedRoute>
     },
   ]);
   return (
