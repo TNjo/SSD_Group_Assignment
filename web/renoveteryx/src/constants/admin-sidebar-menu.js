@@ -34,6 +34,11 @@ const admin_sidebar_menu = [
     path: "/admin-myOrders",
     title: "My Orders",
   },
+  {
+    id: 7,
+    path: "/admin-Inquiry",
+    title: "Raise Inquiry",
+  },
 ];
 
 export default admin_sidebar_menu;

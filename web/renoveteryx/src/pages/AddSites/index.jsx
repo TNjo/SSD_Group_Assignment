@@ -65,6 +65,7 @@ function SiteForm() {
     <div className="dashboard-content">
       <DashboardHeader btnText="New Order" />
       <div className="dashboard-content-container">
+        <h2>Add Construction Site</h2>
         <form onSubmit={handleFormSubmit}>
           <div className="mb-3">
             <label className="form-label">ID</label>

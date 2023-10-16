@@ -38,7 +38,4 @@ function ProtectedRoute({ children }) {
     </div>
   );
 }
-
 export default ProtectedRoute;
-/*The code you've provided is a React component that implements a protected route, where access is only granted to authenticated users with specific email domains. To enhance the code structure and maintainability, you can apply the Factory Method Design Pattern to create and select the appropriate menu based on the user's email domain.*/
-/*In this code, we have created a selectMenu function that encapsulates the logic for selecting the appropriate menu based on the email domain. This separation of concerns makes the code more maintainable and easier to extend if you need to add more email domains and menus in the future.*/

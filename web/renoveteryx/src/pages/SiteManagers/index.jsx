@@ -89,7 +89,7 @@ function SiteManagers() {
                   <td>{siteManager.siteNumber}</td>
                   <td>
                     <div>
-                      <button className="btn btn-primary btn-sm">Delete</button>
+                      <button className="btn btn-danger btn-sm">Delete</button>
                     </div>
                   </td>
                 </tr>

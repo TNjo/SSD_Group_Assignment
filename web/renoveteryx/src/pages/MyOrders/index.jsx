@@ -69,7 +69,7 @@ function MyOrders() {
 
       <div className="dashboard-content-container">
         <div className="dashboard-content-header">
-          <h2>Suppliers List</h2>
+          <h2>Manager Orders</h2>
           <div className="dashboard-content-search">
             <input
               type="text"
