@@ -29,7 +29,6 @@ function ProcurementManager() {
       data.id = doc.id;
       return data;
     });
-    
 
     // Set the orders data to the state
     setOrders(ordersData);
