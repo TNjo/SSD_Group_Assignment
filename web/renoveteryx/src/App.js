@@ -134,15 +134,19 @@ function App() {
       element: <div>404</div>,
     },
     {
-      path: "/register/admin",
-      element: <Signup />,
-    },
-    ,
-    {
       path: "/pm",
-      element: <ProcurementManager />,
+      element:
+        <ProtectedRoute>
+          <ProcurementManager />,
+        </ProtectedRoute>
     },
-    ,
+    {
+      path: "/pm/:docId",
+      element:
+        <ProtectedRoute>
+          <OrderDetails />,
+        </ProtectedRoute>
+    },
     {
       path: "/pm/:docId",
       element: <OrderDetails />,
