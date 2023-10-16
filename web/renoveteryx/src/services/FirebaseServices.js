@@ -1,8 +1,9 @@
 import { getFirestore, doc, getDoc, collection, getDocs, addDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { app } from "../utils/fbconfig"
 
 // fetch specific order data
 export const fetchOrderData = async (docId) => {
-    const db = getFirestore();
+    const db = getFirestore(app);
     const orderRef = doc(db, 'orders', docId);
 
     try {
@@ -23,7 +24,7 @@ export const fetchOrderData = async (docId) => {
 //fetch supplier details
 export const fetchSupplierData = async () => {
     try {
-        const db = getFirestore();
+        const db = getFirestore(app);
         const suppliersCollection = collection(db, 'suppliers');
         const suppliersSnapshot = await getDocs(suppliersCollection);
 
@@ -43,7 +44,7 @@ export const fetchSupplierData = async () => {
 //create new order
 export const createOrderDocument = async (order) => {
     try {
-        const db = getFirestore();
+        const db = getFirestore(app);
         const ordersCollection = collection(db, 'orders');
         await addDoc(ordersCollection, order);
         console.log('Order document created in Firestore:', order);
@@ -54,7 +55,7 @@ export const createOrderDocument = async (order) => {
 
 // Delete Item inside the order items array
 export const deleteItemFromOrder = async (itemNameToDelete, docId) => {
-    const db = getFirestore();
+    const db = getFirestore(app);
     const orderDocRef = doc(db, 'orders', docId);
     try {
         const orderSnapshot = await getDoc(orderDocRef);
@@ -85,7 +86,7 @@ export const deleteItemFromOrder = async (itemNameToDelete, docId) => {
 
 // Delete an order
 export const handleDeleteOrder = async (docId) => {
-    const db = getFirestore();
+    const db = getFirestore(app);
     try {
         const orderDocRef = doc(db, "orders", docId);
         await deleteDoc(orderDocRef);
@@ -96,7 +97,7 @@ export const handleDeleteOrder = async (docId) => {
 
 // Fetch data from Firestore
 export const fetchAllOrderData = async () => {
-    const db = getFirestore();
+    const db = getFirestore(app);
     const ordersCollection = collection(db, "orders");
     const ordersSnapshot = await getDocs(ordersCollection);
 
@@ -110,7 +111,7 @@ export const fetchAllOrderData = async () => {
 }
 
 export const fetchSitesData = async (location) => {
-    const db = getFirestore();
+    const db = getFirestore(app);
     const siteData = collection(db, "sites");
 
     // Create a query with a 'where' clause to filter by 'location'

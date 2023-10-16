@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import { calculateRange, sliceData } from "../../utils/table-pagination";
 import { format, fromUnixTime } from "date-fns";
 import { getStatusText } from "../../constants/getStatusText"
 import { fetchAllOrderData, handleDeleteOrder } from "../../services/FirebaseServices";
 import "../styles.css";
+import ToastContext from "../../Context/ToastContext";
 
 function ProcurementManager() {
+  
+  const { toast } = useContext(ToastContext);
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
@@ -14,7 +17,7 @@ function ProcurementManager() {
 
   useEffect(() => {
     fetchData();
-  }, [page, handleDeleteOrder]);
+  }, [page]);
 
   const fetchData = async () => {
     const ordersData = await fetchAllOrderData();
@@ -50,6 +53,18 @@ function ProcurementManager() {
   const handleChangePage = (newPage) => {
     setPage(newPage);
     setOrders(sliceData(orders, newPage, 10));
+  };
+
+  const deleteOrder = async (orderId) => {
+    try {
+      await handleDeleteOrder(orderId);
+      const updatedOrders = orders.filter((order) => order.id !== orderId);
+      setOrders(updatedOrders);
+      toast.success("Order Deleted Successfully");
+    } catch (error) {
+      toast.error("Error deleting order:", error);
+      console.error("Error deleting order:", error);
+    }
   };
 
   return (
@@ -110,7 +125,7 @@ function ProcurementManager() {
                     </Link>
                     <button
                       className="btn btn-danger"
-                      onClick={() => handleDeleteOrder(order.id)}
+                      onClick={() => deleteOrder(order.id)}
                     >
                       Delete
                     </button>

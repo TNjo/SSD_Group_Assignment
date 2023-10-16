@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import Select from 'react-select';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { format, fromUnixTime } from 'date-fns';
 import { fetchOrderData, fetchSupplierData, createOrderDocument, deleteItemFromOrder, fetchSitesData } from "../../services/FirebaseServices";
 import { getStatusText } from "../../constants/getStatusText"
 import { progressBar } from "../../constants/progressBar";
+import { toast } from 'react-toastify';
+import ToastContext from '../../Context/ToastContext';
 
 const OrderDetails = () => {
 
+    const navigate = useNavigate();
+    const { toast } = useContext(ToastContext);
     const [selectedSuppliers, setSelectedSuppliers] = useState({});
     console.log(selectedSuppliers)
     const { docId } = useParams();
@@ -69,20 +73,40 @@ const OrderDetails = () => {
                 totalPrice: item.quantity * selectedSupplier.items.find((i) => i.itemName === item.name).price,
             };
 
-            console.log('Order to Supplier:', order);
-            createOrderDocument(order);
-            console.log('Order Item to Delete:', order.items[0].name);
-            deleteItemFromOrder(order.items[0].name, docId);
-            setSelectedSuppliers({});
-            fetchData();
+            try {
+                console.log('Order to Supplier:', order);
+                createOrderDocument(order);
+                toast.success("Order item sent succesfully")
+                console.log('Order Item to Delete:', order.items[0].name);
+                deleteItemFromOrder(order.items[0].name, docId);
+                toast.success("Order items deleted from list")
+
+                // Update the orderData and selectedSuppliers states
+                setOrderData((prevOrderData) => {
+                    // Remove the item from the orderData
+                    const updatedItems = prevOrderData.items.filter((item) => item.name !== itemName);
+                    console.log(updatedItems)
+                    if (updatedItems.length === 0) {
+                        toast.success("Order deleted because no items left")
+                        navigate("/pm")
+                    }
+                    return { ...prevOrderData, items: updatedItems };
+                });
+
+                setSelectedSuppliers({});
+            } catch (error) {
+                console.log(error)
+            }
+
         } else {
+            toast.error("No item or supplier selected")
             console.error("No item or supplier selected")
         }
     };
 
     return (
 
-        <div className="container mx-3 my-3">
+        <div className="mx-5 my-3">
             <div>
                 {orderData ? (
                     <div>
