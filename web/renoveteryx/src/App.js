@@ -6,7 +6,6 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-
 import { ToastContextProvider } from "../src/Context/ToastContext";
 import SideBar from "./components/Sidebar";
 import sidebar_menu from "./constants/sidebar-menu";
@@ -15,8 +14,6 @@ import "firebase/auth";
 import "./App.css";
 import Orders from "./pages/StaffPM";
 import Login from "./pages/Login/Login";
-
-
 import AuthContext from "./Context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AdminHome from "./pages/AdminHome";
@@ -29,18 +26,10 @@ import AdminOrderDetails from "./pages/AdminOrderDetails";
 import PendingOrders from "./pages/PendingOrders";
 import Signup from "./pages/SignUp";
 import Home from "./pages/Home";
-
-
-
-
-
-
-
-
-
-
-import ProcurementManager from "./pages/Orders";
-import OrderDetails from "./pages/Orders/OrderDetails";
+import ProcurementManager from "./pages/StaffPM";
+import OrderDetails from "./pages/StaffPM/OrderDetails";
+import RiseInquiry from "./pages/RiseInquiry";
+import InquireDetails from "./pages/InquireDetails";
 
 function App() {
   const router = createBrowserRouter([
@@ -147,14 +136,32 @@ function App() {
     {
       path: "/register/admin",
       element: <Signup />,
-    },,
+    },
+    ,
     {
       path: "/pm",
-      element: <ProcurementManager/>,
-    },,
+      element: <ProcurementManager />,
+    },
+    ,
     {
       path: "/pm/:docId",
       element: <OrderDetails />,
+    },
+    {
+      path: "/admin-Inquiry",
+      element: (
+        <ProtectedRoute>
+          <RiseInquiry />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-InquiryDetails/:orderId",
+      element: (
+        <ProtectedRoute>
+          <InquireDetails />,
+        </ProtectedRoute>
+      ),
     },
   ]);
   return (
