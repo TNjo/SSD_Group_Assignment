@@ -7,6 +7,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import { ToastContextProvider } from "../src/Context/ToastContext";
 import SideBar from "./components/Sidebar";
 import sidebar_menu from "./constants/sidebar-menu";
 import firebase from "firebase/app";
@@ -125,11 +126,11 @@ function App() {
     {
       path: "/register/admin",
       element: <Signup />,
-    },,
+    }, ,
     {
       path: "/pm",
-      element: <ProcurementManager/>,
-    },,
+      element: <ProcurementManager />,
+    }, ,
     {
       path: "/pm/:docId",
       element: <OrderDetails />,
@@ -137,7 +138,9 @@ function App() {
   ]);
   return (
     <AuthContext>
-      <RouterProvider router={router}></RouterProvider>
+      <ToastContextProvider>
+        <RouterProvider router={router}></RouterProvider>
+      </ToastContextProvider>
     </AuthContext>
   );
 }
