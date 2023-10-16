@@ -12,7 +12,7 @@ import sidebar_menu from "./constants/sidebar-menu";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "./App.css";
-import Orders from "./pages/Orders";
+import Orders from "./pages/StaffPM";
 import Login from "./pages/Login/Login";
 import Signup from "./routes/signup";
 import Home from "./routes/home";
@@ -25,8 +25,8 @@ import MyOrders from "./pages/MyOrders";
 import SiteManagers from "./pages/SiteManagers";
 import Sites from "./pages/Sites";
 import AddSites from "./pages/AddSites";
-import ProcurementManager from "./pages/Orders";
-import OrderDetails from "./pages/Orders/OrderDetails";
+import ProcurementManager from "./pages/StaffPM";
+import OrderDetails from "./pages/StaffPM/OrderDetails";
 
 function App() {
   const router = createBrowserRouter([
@@ -131,7 +131,7 @@ function App() {
       element: <ProcurementManager/>,
     },,
     {
-      path: "/pm/:id",
+      path: "/pm/:docId",
       element: <OrderDetails />,
     },
   ]);
