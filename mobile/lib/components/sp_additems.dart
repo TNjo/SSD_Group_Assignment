@@ -39,12 +39,13 @@ class _SPAddItemsState extends State<SPAddItems> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Add Items",
+          "Add to Shop",
           style: TextStyle(
             fontFamily: 'OpenSans',
             color: Color.fromARGB(255, 61, 62, 63),
@@ -63,29 +64,20 @@ class _SPAddItemsState extends State<SPAddItems> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Container(
-                width: double.infinity,
-                color: Colors.grey,
-                padding: const EdgeInsets.all(20.0),
-                child: Center(
-                  child: Text(
-                    "Add Items",
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+            SizedBox(height: 30.0),
+            Text(
+              "Add Items",
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
-            SizedBox(height: 20.0),
+            SizedBox(height: 35.0),
             buildEditableField(itemNameController, 'Item Name'),
             buildEditableField(descriptionController, 'Description'),
             buildEditableField(priceController, 'Price',
@@ -111,8 +103,8 @@ class _SPAddItemsState extends State<SPAddItems> {
                     };
 
                     // Retrieve the existing items list
-                    final existingItems =
-                        List<Map<String, dynamic>>.from(widget.userData['items'] ?? []);
+                    final existingItems = List<Map<String, dynamic>>.from(
+                        widget.userData['items'] ?? []);
 
                     // Add the new item to the existing list
                     existingItems.add(newItem);
@@ -149,13 +141,16 @@ class _SPAddItemsState extends State<SPAddItems> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.yellow,
-                  onPrimary: Colors.black,
+                  backgroundColor: Color.fromARGB(255, 90, 121, 141),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(30.0), // Apply rounded border
+                  ),
                   textStyle: TextStyle(
-                    fontSize: 20.0,
+                    fontSize: 16.0,
                   ),
                   padding:
-                      EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 ),
                 child: Text('Add Item'),
               ),
@@ -211,4 +206,3 @@ class _SPAddItemsState extends State<SPAddItems> {
     );
   }
 }
-
