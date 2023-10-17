@@ -20,13 +20,24 @@ const admin_sidebar_menu = [
   {
     id: 4,
 
-    path: "/admin-allOrders",
-    title: "All Orders",
+    path: "/admin-Suppliers",
+    title: "Suppliers",
   },
   {
     id: 5,
+
+    path: "/admin-pendingOrders",
+    title: "Pending Orders",
+  },
+  {
+    id: 6,
     path: "/admin-myOrders",
     title: "My Orders",
+  },
+  {
+    id: 7,
+    path: "/admin-Inquiry",
+    title: "Raise Inquiry",
   },
 ];
 

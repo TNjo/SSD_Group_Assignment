@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DashboardHeader from "../../components/DashboardHeader";
+import * as firebaseServices from "../../firebaseServices/firebaseServices";
 
 function SiteForm() {
   const [siteData, setSiteData] = useState({
@@ -14,23 +14,15 @@ function SiteForm() {
   });
 
   const [managerNames, setManagerNames] = useState([]);
-  const db = getFirestore();
 
   useEffect(() => {
-    // Fetch available manager names from "siteManagers" collection
     const fetchManagerNames = async () => {
-      const siteManagersCollection = collection(db, "siteManagers");
-      const siteManagersSnapshot = await getDocs(siteManagersCollection);
-      const managerNames = [];
-      siteManagersSnapshot.forEach((doc) => {
-        const data = doc.data();
-        managerNames.push(data.managerName);
-      });
-      setManagerNames(managerNames);
+      const names = await firebaseServices.fetchManagerNames();
+      setManagerNames(names);
     };
 
     fetchManagerNames();
-  }, [db]);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +32,6 @@ function SiteForm() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // Form validation
     if (
       !siteData.id ||
       !siteData.name ||
@@ -53,14 +44,10 @@ function SiteForm() {
     }
 
     try {
-      // Add data to Firestore collection
-      const docRef = await addDoc(collection(db, "sites"), siteData);
-      console.log("Document written with ID: ", docRef.id);
+      const docId = await firebaseServices.addSiteData(siteData);
 
-      // Show a success toast message
       toast.success("Site data added successfully");
 
-      // Clear the form
       setSiteData({
         id: "",
         name: "",
@@ -70,7 +57,7 @@ function SiteForm() {
       });
     } catch (error) {
       console.error("Error adding document: ", error);
-      toast.error("An error occurred while adding the site data");
+      toast.error(error.message);
     }
   };
 
@@ -78,6 +65,7 @@ function SiteForm() {
     <div className="dashboard-content">
       <DashboardHeader btnText="New Order" />
       <div className="dashboard-content-container">
+        <h2>Add Construction Site</h2>
         <form onSubmit={handleFormSubmit}>
           <div className="mb-3">
             <label className="form-label">ID</label>

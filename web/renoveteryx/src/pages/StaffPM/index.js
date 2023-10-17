@@ -1,60 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getFirestore, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { calculateRange, sliceData } from "../../utils/table-pagination";
 import { format, fromUnixTime } from "date-fns";
-
+import { getStatusText } from "../../constants/getStatusText"
+import { fetchAllOrderData, handleDeleteOrder } from "../../services/FirebaseServices";
 import "../styles.css";
-
-// Function to map status numbers to status text
-const getStatusText = (status) => {
-  switch (status) {
-    case 1:
-      return 'Pending';
-    case 2:
-      return 'Send to Supplier';
-    case 3:
-      return 'Send to Manager';
-    case 4:
-      return 'Supplier Accepted';
-    case 5:
-      return 'Supplier Rejected';
-    default:
-      return 'Unknown';
-  }
-};
+import ToastContext from "../../Context/ToastContext";
 
 function ProcurementManager() {
+  
+  const { toast } = useContext(ToastContext);
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState("All");
-
-  // Initialize Firebase Firestore
-  const db = getFirestore();
 
   useEffect(() => {
     fetchData();
   }, [page]);
 
-  // Fetch data from Firestore
   const fetchData = async () => {
-    const ordersCollection = collection(db, "orders");
-    const ordersSnapshot = await getDocs(ordersCollection);
+    const ordersData = await fetchAllOrderData();
 
-    const ordersData = ordersSnapshot.docs.map((doc) => {
-      const data = doc.data();
-      data.id = doc.id;
-      return data;
-    });
+    if (ordersData) {
+      setOrders(ordersData);
+      // console.log(ordersData)
 
-    // Set the orders data to the state
-    setOrders(ordersData);
-
-    // Calculate pagination
-    setPagination(calculateRange(ordersData, 10));
-    setOrders(sliceData(ordersData, page, 10));
+      // Calculate pagination
+      setPagination(calculateRange(ordersData, 10));
+      setOrders(sliceData(ordersData, page, 10));
+    }
   };
 
   // Search
@@ -64,6 +39,7 @@ function ProcurementManager() {
       let searchResults = orders.filter(
         (item) =>
           item.sitemanager.toLowerCase().includes(search.toLowerCase()) ||
+          getStatusText(item.status).toLowerCase().includes(search.toLowerCase()) ||
           item.constructionSite.toLowerCase().includes(search.toLowerCase())
       );
       setOrders(searchResults);
@@ -79,15 +55,15 @@ function ProcurementManager() {
     setOrders(sliceData(orders, newPage, 10));
   };
 
-  // Delete an order
-  const handleDeleteOrder = async (orderId) => {
+  const deleteOrder = async (orderId) => {
     try {
-      const orderDocRef = doc(db, "orders", orderId);
-      await deleteDoc(orderDocRef);
-      // Remove the deleted order from the state
-      setOrders(orders.filter((order) => order.id !== orderId));
+      await handleDeleteOrder(orderId);
+      const updatedOrders = orders.filter((order) => order.id !== orderId);
+      setOrders(updatedOrders);
+      toast.success("Order Deleted Successfully");
     } catch (error) {
-      console.error("Error deleting order: ", error);
+      toast.error("Error deleting order:", error);
+      console.error("Error deleting order:", error);
     }
   };
 
@@ -111,6 +87,7 @@ function ProcurementManager() {
           <table className="table table-striped">
             <thead>
               <tr>
+                <th>#</th>
                 <th>Construction Site</th>
                 <th>Date</th>
                 <th>Site Manager</th>
@@ -123,8 +100,9 @@ function ProcurementManager() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
+              {orders.map((order, index) => (
                 <tr key={order.id}>
+                  <td>{index + 1}</td>
                   <td>{order.constructionSite}</td>
                   <td>{format(fromUnixTime(order.date.seconds), "MM/dd/yyyy HH:mm:ss")}</td>
                   <td>{order.sitemanager}</td>
@@ -147,7 +125,7 @@ function ProcurementManager() {
                     </Link>
                     <button
                       className="btn btn-danger"
-                      onClick={() => handleDeleteOrder(order.id)}
+                      onClick={() => deleteOrder(order.id)}
                     >
                       Delete
                     </button>
