@@ -250,6 +250,6 @@ class _SMCartState extends State<SMCartPage> {
 class ItemData {
   String name;
   int quantity;
-
+  
   ItemData({required this.name, required this.quantity});
 }
