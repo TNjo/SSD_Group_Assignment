@@ -34,10 +34,8 @@ class _SPHomePageState extends State<SPHomePage> {
       final userDoc = querySnapshot.docs[0].data() as Map<String, dynamic>;
 
       if (userDoc.containsKey('items') && userDoc['items'] is List) {
-        // Check if 'items' exists and is a list
         final itemsFromFirestore = userDoc['items'] as List;
 
-        // Separate the values and build a list of items with specific fields
         final separatedItems = itemsFromFirestore.map((item) {
           final itemName = item['itemName'] as String;
           final price = item['price'] as int;
@@ -58,7 +56,6 @@ class _SPHomePageState extends State<SPHomePage> {
         });
         print('Items:$filteredItems');
       } else {
-        // Handle the case where 'items' does not exist or is not a list
         print("'items' in Firestore does not exist or is not a list.");
       }
     }
@@ -69,7 +66,7 @@ class _SPHomePageState extends State<SPHomePage> {
     TextEditingController itemNameController =
         TextEditingController(text: item['itemName'] as String);
     TextEditingController descriptionController =
-        TextEditingController(text: item['itemName'] as String);    
+        TextEditingController(text: item['itemName'] as String);
     TextEditingController priceController =
         TextEditingController(text: item['price'].toString());
     TextEditingController quantityController =
@@ -117,22 +114,24 @@ class _SPHomePageState extends State<SPHomePage> {
 
                 final firestore = FirebaseFirestore.instance;
 
-                // Update the Firestore document with the updated item for the specific user
+                // Inside your _editItemDetailsDialog function
                 await firestore
                     .collection('suppliers')
                     .where('userId', isEqualTo: userId)
                     .get()
                     .then((querySnapshot) {
                   if (querySnapshot.docs.isNotEmpty) {
-                    //final docId = querySnapshot.docs[0].id;
                     final userDocRef = querySnapshot.docs[0].reference;
+                    // Get the current 'items' array
+                    List<dynamic> currentItems = querySnapshot.docs[0]['items'];
 
-                    final updatedItems = [
-                      updatedItem
-                    ]; // Convert the updated item to a list
+                    // Update the desired item within the array
+                    currentItems[itemIndex] = updatedItem;
 
-                    userDocRef.update({
-                      'items': FieldValue.arrayUnion(updatedItems),
+                    // Update the entire 'items' array with the modified array
+                    userDocRef.update({'items': currentItems});
+                    setState(() {
+                      filteredItems[itemIndex] = updatedItem;
                     });
                   } else {
                     // Handle the case where the user's document doesn't exist
@@ -156,6 +155,34 @@ class _SPHomePageState extends State<SPHomePage> {
     );
   }
 
+  void deleteItem(context, index) async {
+    final firestore = FirebaseFirestore.instance;
+    final userId = widget.userData['uid'];
+
+    await firestore
+        .collection('suppliers')
+        .where('userId', isEqualTo: userId)
+        .get()
+        .then((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        final userDocRef = querySnapshot.docs[0].reference;
+        List<dynamic> currentItems = querySnapshot.docs[0]['items'];
+
+        // Remove the item at the specified index
+        currentItems.removeAt(index);
+
+        // Update the entire 'items' array with the modified array
+        userDocRef.update({'items': currentItems});
+        setState(() {
+          filteredItems.removeAt(index);
+        });
+      } else {
+        // Handle the case where the user's document doesn't exist
+        print('User document does not exist');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,9 +198,8 @@ class _SPHomePageState extends State<SPHomePage> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.arrow_back), // Add a back button icon
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                // Navigate back to the previous screen when the button is pressed
                 Navigator.pop(context);
               },
             );
@@ -243,11 +269,10 @@ class _SPHomePageState extends State<SPHomePage> {
                       debugPrint('onFieldSubmitted value $value');
                     },
                     onChanged: (value) {
-                      // Filter the items based on the search query
                       setState(() {
                         filteredItems = items
                             .where((item) =>
-                                item['itemName'].toString().contains(value))
+                                item['itemName'].toString().toLowerCase().contains(value))
                             .toList();
                       });
                     },
@@ -257,76 +282,89 @@ class _SPHomePageState extends State<SPHomePage> {
             ),
             const SizedBox(height: 20.0),
             Container(
-              color: Colors.grey, // Gray background color
+              color: Colors.grey,
               child: Container(
-                width: double.infinity, // Match the screen width
-                padding: EdgeInsets.symmetric(
-                    vertical: 16.0), // Adjust vertical padding as needed
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 16.0),
                 child: Padding(
                   padding: EdgeInsets.only(
                       top: 0.0, bottom: 0.0, left: 20.0, right: 0.0),
                   child: Text(
-                    'My Shop', // Your heading text
+                    'My Shop',
                     style: TextStyle(
-                      fontSize: 24, // Adjust the font size as needed
-                      fontWeight:
-                          FontWeight.bold, // Make the text bold if needed
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // You can add more widgets or text here if needed
                 ),
               ),
             ),
             SizedBox(height: 15.0),
             Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: filteredItems.length,
-                itemBuilder: (context, index) {
-                  final item = filteredItems[index];
-                  final itemName = item['itemName'] as String;
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 10.0,
-                      horizontal: 12.0,
-                    ),
-                    padding: const EdgeInsets.all(16.0),
-                    height: 50.0, // Set the desired height
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                          10.0), // Increase the corner radius
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x5f000000), // Increase shadow opacity
-                          offset: Offset(0.0, 4.0), // Increase shadow offset
-                          blurRadius: 12.0, // Increase shadow blur radius
+              child: filteredItems.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No items in shop',
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 1, 66, 119),
                         ),
-                      ],
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = filteredItems[index];
+                        final itemName = item['itemName'] as String;
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 10.0,
+                            horizontal: 12.0,
+                          ),
+                          padding: const EdgeInsets.all(16.0),
+                          height: 50.0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10.0),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x5f000000),
+                                offset: Offset(0.0, 4.0),
+                                blurRadius: 12.0,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '$itemName',
+                                style: const TextStyle(fontSize: 16.0),
+                              ),
+                              Spacer(),
+                              GestureDetector(
+                                onTap: () {
+                                  _editItemDetailsDialog(context, item, index);
+                                },
+                                child: Icon(Icons.edit),
+                              ),
+                              const SizedBox(width: 10.0),
+                              GestureDetector(
+                                onTap: () {
+                                  // Confirm deletion using a dialog if needed
+                                  // For simplicity, we're directly deleting the item here
+                                  deleteItem(context, index);
+                                },
+                                child: Icon(Icons.delete),
+                              )
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '$itemName', // Display the itemName
-                          style: const TextStyle(fontSize: 16.0),
-                        ),
-                        Spacer(),
-                        GestureDetector(
-                          onTap: () {
-                            _editItemDetailsDialog(
-                                context, item, index); // Pass the item index
-                          },
-                          child: Icon(Icons.edit),
-                        ),
-                        const SizedBox(width: 10.0),
-                        Icon(Icons.delete)
-                      ],
-                    ),
-                  );
-                },
-              ),
-            )
+            ),
           ],
         ),
       ),
