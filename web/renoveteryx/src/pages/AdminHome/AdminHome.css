@@ -1,0 +1,55 @@
+/* AdminHome.css */
+.admin-home-container {
+    background-image: url('../../assets/images/bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Adjust the button width to fit three buttons in one row */
+.big-button {
+    background-color: rgba(68, 65, 65, 0.7);
+    /* Add transparency with rgba (0.7) */
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: none;
+    width: calc(33.33% - 20px);
+    /* 33.33% of the container width with some gap */
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 1cm;
+}
+
+.big-button:hover {
+    background-image: linear-gradient(90deg, #53cbef 0%, #dcc66c 50%, #dd98ee 75%, #53cbef 100%);
+    animation: slidernbw 5s linear infinite;
+    color: #000;
+    background-color: rgba(68, 65, 65, 1);
+    /* Increase transparency on hover (0.7 to 1) */
+}
+
+@keyframes slidernbw {
+    to {
+        background-position: 20vw;
+    }
+}
+
+/* Add more styling as per your requirements */
