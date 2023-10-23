@@ -157,7 +157,12 @@ class _SMCartState extends State<SMCartPage> {
                           label: Text('Action',
                               style: TextStyle(fontWeight: FontWeight.bold))),
                     ],
-                    rows: itemDataList.map((itemData) {
+                    rows: itemDataList.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final itemData = entry.value;
+                      final quantityController = TextEditingController(
+                          text: itemData.quantity.toString());
+
                       return DataRow(cells: [
                         DataCell(Text(itemData.name)),
                         DataCell(
@@ -167,23 +172,34 @@ class _SMCartState extends State<SMCartPage> {
                                 icon: Icon(Icons.remove,
                                     size: 16, color: Colors.blue),
                                 onPressed: () {
-                                  // Handle decreasing quantity
                                   setState(() {
                                     if (itemData.quantity > 1) {
                                       itemData.quantity--;
+                                      quantityController.text =
+                                          itemData.quantity.toString();
                                     }
                                   });
                                 },
                               ),
-                              Text(itemData.quantity
-                                  .toString()), // Display the current quantity
+                              Flexible(
+                                child: TextFormField(
+                                  controller: quantityController,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      itemData.quantity = int.parse(value);
+                                    });
+                                  },
+                                ),
+                              ),
                               IconButton(
                                 icon: Icon(Icons.add,
                                     size: 16, color: Colors.blue),
                                 onPressed: () {
-                                  // Handle increasing quantity
                                   setState(() {
                                     itemData.quantity++;
+                                    quantityController.text =
+                                        itemData.quantity.toString();
                                   });
                                 },
                               ),
@@ -195,9 +211,8 @@ class _SMCartState extends State<SMCartPage> {
                             icon: Icon(Icons.delete,
                                 color: const Color.fromARGB(255, 184, 15, 3)),
                             onPressed: () {
-                              // Handle removing the item from the itemDataList
                               setState(() {
-                                itemDataList.remove(itemData);
+                                itemDataList.removeAt(index);
                               });
                             },
                           ),
@@ -240,6 +255,7 @@ class _SMCartState extends State<SMCartPage> {
                       ),
                     ),
                   )
+                  // ... (Remaining code)
                 ],
               ),
             ),
@@ -250,6 +266,6 @@ class _SMCartState extends State<SMCartPage> {
 class ItemData {
   String name;
   int quantity;
-  
+
   ItemData({required this.name, required this.quantity});
 }
