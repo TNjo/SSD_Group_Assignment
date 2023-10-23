@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/sm_cartpage.dart';
-import 'package:mobile/sm_homepage.dart';
-import 'package:mobile/sm_orderspage.dart';
-import 'package:mobile/sm_profilepage.dart';
+import 'package:mobile/screens/sm_cartpage.dart';
+import 'package:mobile/screens/sm_homepage.dart';
+import 'package:mobile/screens/sm_orderspage.dart';
+import 'package:mobile/screens/sm_profilepage.dart';
 import 'package:motion_tab_bar_v2/motion-tab-bar.dart';
 import 'package:motion_tab_bar_v2/motion-badge.widget.dart';
 import 'package:motion_tab_bar_v2/motion-tab-controller.dart';

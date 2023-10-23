@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/utils.dart';
 
-
 class FirstPage extends StatelessWidget {
   const FirstPage({super.key});
 

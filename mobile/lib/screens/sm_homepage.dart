@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/sm_cartpage.dart';
+import 'package:mobile/screens/sm_cartpage.dart';
 import 'package:searchbar_animation/searchbar_animation.dart';
 
 class SMHomePage extends StatefulWidget {

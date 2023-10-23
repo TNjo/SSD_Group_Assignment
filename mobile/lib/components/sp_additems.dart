@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile/services/auth_services.dart';
 
 class SPAddItems extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -12,13 +12,14 @@ class SPAddItems extends StatefulWidget {
 }
 
 class _SPAddItemsState extends State<SPAddItems> {
+  final AuthService _authService = AuthService();
   TextEditingController itemNameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
 
   Future<void> updateItems(List<Map<String, dynamic>> updatedItems) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _authService.getCurrentUser();
     if (user != null) {
       final userId = user.uid;
       final firestore = FirebaseFirestore.instance;

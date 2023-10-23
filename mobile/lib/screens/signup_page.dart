@@ -1,7 +1,5 @@
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile/services/signup_services.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -11,10 +9,11 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  String selectedOption = "Site Manager"; // Default selected option
+  final SignupService _signupService = SignupService();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController reEnterPasswordController = TextEditingController();
+  String selectedOption = "Site Manager"; // Default selected option
 
   @override
   Widget build(BuildContext context) {
@@ -227,54 +226,9 @@ class _SignupPageState extends State<SignupPage> {
                         final String email = emailController.text;
                         final String password = passwordController.text;
 
-// Create a new user account using email and password
-                        UserCredential? userCredential = await FirebaseAuth
-                            .instance
-                            .createUserWithEmailAndPassword(
-                          email: email,
-                          password: password,
-                        );
-
-                        if (userCredential.user != null) {
-                          // If userCredential and user are not null, proceed with the user ID.
-                          String userId = userCredential.user!.uid;
-
-                          // Determine the user's role (site_manager or supplier)
-                          String userRole = selectedOption == "Site Manager"
-                              ? "site_manager"
-                              : "supplier";
-
-                          // Store user data in the "users" collection
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(userId)
-                              .set({
-                            'email': email,
-                            'role': userRole,
-                            // Add other user data fields here...
-                          });
-
-                          // Create a new document with an auto-generated unique ID in the respective collection
-                          if (userRole == "site_manager") {
-                            await FirebaseFirestore.instance
-                                .collection('siteManagers')
-                                .add({
-                              'userId': userId,
-                              'email': email,
-                              'password': password,
-                              // Add other site manager data fields here...
-                            });
-                          } else if (userRole == "supplier") {
-                            await FirebaseFirestore.instance
-                                .collection('suppliers')
-                                .add({
-                              'userId': userId,
-                              'email': email,
-                              'password': password,
-                              // Add other supplier data fields here...
-                            });
-                          }
-                        }
+                        // Use the SignupService to sign up
+                        await _signupService.signUp(
+                            email, password, selectedOption);
 
                         // After successful sign-up, you can navigate to a different screen:
                         Navigator.of(context).pushNamed('/login');
@@ -306,9 +260,7 @@ class _SignupPageState extends State<SignupPage> {
             ),
           ),
         ],
-),
-);
+      ),
+    );
+  }
 }
-}
-
- 

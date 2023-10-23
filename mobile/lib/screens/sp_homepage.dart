@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/services/supplier_services.dart';
 import 'package:searchbar_animation/searchbar_animation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SPHomePage extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -14,6 +14,7 @@ class _SPHomePageState extends State<SPHomePage> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, Object>> items = [];
   List<Map<String, Object>> filteredItems = [];
+  final SupplierServices supplierServices = SupplierServices();
 
   @override
   void initState() {
@@ -23,41 +24,13 @@ class _SPHomePageState extends State<SPHomePage> {
 
   Future<void> _fetchSupplierItems() async {
     final userId = widget.userData['uid'];
-    final firestore = FirebaseFirestore.instance;
-
-    final querySnapshot = await firestore
-        .collection('suppliers')
-        .where('userId', isEqualTo: userId)
-        .get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      final userDoc = querySnapshot.docs[0].data() as Map<String, dynamic>;
-
-      if (userDoc.containsKey('items') && userDoc['items'] is List) {
-        final itemsFromFirestore = userDoc['items'] as List;
-
-        final separatedItems = itemsFromFirestore.map((item) {
-          final itemName = item['itemName'] as String;
-          final price = item['price'] as int;
-          final quantity = item['quantity'] as int;
-          final description = item['description'] as String;
-
-          return {
-            'itemName': itemName,
-            'price': price,
-            'quantity': quantity,
-            'description': description,
-          };
-        }).toList();
-
-        setState(() {
-          items = separatedItems;
-          filteredItems = items;
-        });
-        print('Items:$filteredItems');
-      } else {
-        print("'items' in Firestore does not exist or is not a list.");
-      }
+    final fetchedItems = await supplierServices.fetchSupplierItems(userId);
+    
+    if (fetchedItems != null) {
+      setState(() {
+        items = fetchedItems;
+        filteredItems = items;
+      });
     }
   }
 
@@ -66,7 +39,7 @@ class _SPHomePageState extends State<SPHomePage> {
     TextEditingController itemNameController =
         TextEditingController(text: item['itemName'] as String);
     TextEditingController descriptionController =
-        TextEditingController(text: item['itemName'] as String);
+        TextEditingController(text: item['description'] as String);
     TextEditingController priceController =
         TextEditingController(text: item['price'].toString());
     TextEditingController quantityController =
@@ -111,34 +84,7 @@ class _SPHomePageState extends State<SPHomePage> {
                   'price': int.parse(priceController.text),
                   'quantity': int.parse(quantityController.text),
                 };
-
-                final firestore = FirebaseFirestore.instance;
-
-                // Inside your _editItemDetailsDialog function
-                await firestore
-                    .collection('suppliers')
-                    .where('userId', isEqualTo: userId)
-                    .get()
-                    .then((querySnapshot) {
-                  if (querySnapshot.docs.isNotEmpty) {
-                    final userDocRef = querySnapshot.docs[0].reference;
-                    // Get the current 'items' array
-                    List<dynamic> currentItems = querySnapshot.docs[0]['items'];
-
-                    // Update the desired item within the array
-                    currentItems[itemIndex] = updatedItem;
-
-                    // Update the entire 'items' array with the modified array
-                    userDocRef.update({'items': currentItems});
-                    setState(() {
-                      filteredItems[itemIndex] = updatedItem;
-                    });
-                  } else {
-                    // Handle the case where the user's document doesn't exist
-                    print('User document does not exist');
-                  }
-                });
-
+                supplierServices.updateItem(userId, updatedItem, itemIndex);
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: Text('Save Changes'),
@@ -156,31 +102,8 @@ class _SPHomePageState extends State<SPHomePage> {
   }
 
   void deleteItem(context, index) async {
-    final firestore = FirebaseFirestore.instance;
     final userId = widget.userData['uid'];
-
-    await firestore
-        .collection('suppliers')
-        .where('userId', isEqualTo: userId)
-        .get()
-        .then((querySnapshot) {
-      if (querySnapshot.docs.isNotEmpty) {
-        final userDocRef = querySnapshot.docs[0].reference;
-        List<dynamic> currentItems = querySnapshot.docs[0]['items'];
-
-        // Remove the item at the specified index
-        currentItems.removeAt(index);
-
-        // Update the entire 'items' array with the modified array
-        userDocRef.update({'items': currentItems});
-        setState(() {
-          filteredItems.removeAt(index);
-        });
-      } else {
-        // Handle the case where the user's document doesn't exist
-        print('User document does not exist');
-      }
-    });
+    supplierServices.deleteItem(userId, index);
   }
 
   @override
@@ -348,16 +271,14 @@ class _SPHomePageState extends State<SPHomePage> {
                                 onTap: () {
                                   _editItemDetailsDialog(context, item, index);
                                 },
-                                child: Icon(Icons.edit),
+                                child: Icon(Icons.edit,color: const Color.fromARGB(255, 0, 23, 43)),
                               ),
                               const SizedBox(width: 10.0),
                               GestureDetector(
                                 onTap: () {
-                                  // Confirm deletion using a dialog if needed
-                                  // For simplicity, we're directly deleting the item here
                                   deleteItem(context, index);
                                 },
-                                child: Icon(Icons.delete),
+                                child: Icon(Icons.delete,color: const Color.fromARGB(255, 184, 15, 3)),
                               )
                             ],
                           ),

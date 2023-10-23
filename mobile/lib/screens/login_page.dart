@@ -1,6 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile/services/login_services.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key});
@@ -10,55 +9,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final LoginService _loginService = LoginService();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   Future<void> _login() async {
-  try {
-    final String email = emailController.text;
-    final String password = passwordController.text;
-
-    // Sign in the user with Firebase Authentication
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    // Fetch the user's role from Firestore
-    String uid = userCredential.user!.uid;
-    String userRole = await _getUserRole(uid);
-
-    // Navigate based on the user's role and pass the email
-    if (userRole == "site_manager") {
-      Navigator.pushNamed(context, '/sm_navbar', arguments: {'email': email, 'password': password, 'role': userRole, 'uid': uid});
-
-    } else if (userRole == "supplier") {
-      Navigator.pushNamed(context, '/sp_navbar', arguments: {'email': email, 'password': password, 'role': userRole, 'uid': uid});
-    }
-
-    // Clear the text fields after successful login
-    emailController.clear();
-    passwordController.clear();
-  } catch (e) {
-    // Handle login errors (e.g., invalid credentials)
-    print('Error during login: $e');
-  }
-}
-
-
-  Future<String> _getUserRole(String uid) async {
-    // Fetch user role from Firestore based on the user's UID
-    DocumentSnapshot userSnapshot =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-
-    // Check if the document exists and contains the 'role' field
-    if (userSnapshot.exists && userSnapshot.data() != null) {
-      return userSnapshot.get('role');
-    } else {
-      // Handle the case where the 'role' field is missing or the document doesn't exist
-      return "Unknown"; // You can choose to handle this case differently
-    }
+    _loginService.handleLogin(context, emailController, passwordController);
   }
 
   @override
