@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SMProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -313,6 +314,19 @@ Future<void> updateProfile() async {
     final updatedSiteName = siteNameController.text;
     final updatedSiteNumber = siteNumberController.text;
 
+    if (updatedContact.length != 10) {
+      // Show an error toast message for an invalid contact number
+      Fluttertoast.showToast(
+        msg: "Contact number should contain exactly 10 numbers",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 5,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return; // Return to prevent further execution
+    }
+
     // Query the documents based on the 'userId' field
     final userDocsQuery = firestore
         .collection('siteManagers')
@@ -334,6 +348,16 @@ Future<void> updateProfile() async {
         'siteName': updatedSiteName,
         'siteNumber': updatedSiteNumber,
       });
+
+     Fluttertoast.showToast(
+      msg: "Profile updated successfully",
+      toastLength: Toast.LENGTH_SHORT, // You can adjust the duration as needed
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 3, // Duration for iOS
+      backgroundColor: Colors.green, // Background color of the toast
+      textColor: Colors.white, // Text color of the toast
+    );
+  } 
     } else {
       // Handle the case where no document matches the userId
       print('Error: Document for user does not exist.');
@@ -342,4 +366,4 @@ Future<void> updateProfile() async {
     // Optionally, you can update the local state or show a confirmation message.
   }
 }
-}
+
