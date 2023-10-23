@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile/services/profile_services.dart';
 
 class SPProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -30,37 +29,31 @@ class _SPProfilePageState extends State<SPProfilePage> {
   bool contactEditMode = false;
   bool addressEditMode = false;
 
+  final ProfileService _profileService =
+      ProfileService(); // Create an instance of your ProfileService
+
   @override
   void initState() {
     super.initState();
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final firestore = FirebaseFirestore.instance;
+    // Fetch user profile data and update the state
+    fetchSupplierProfileData();
+  }
 
-      firestore
-          .collection('suppliers')
-          .where('userId', isEqualTo: user.uid)
-          .get()
-          .then((QuerySnapshot querySnapshot) {
-        if (querySnapshot.docs.isNotEmpty) {
-          final userDoc = querySnapshot.docs[0].data() as Map<String, dynamic>;
+  Future<void> fetchSupplierProfileData() async {
+    final userDoc = await _profileService.fetchSPProfile();
+    setState(() {
+      email = userDoc['email'] ?? '';
+      password = userDoc['password'] ?? '';
+      supplierName = userDoc['supplierName'] ?? '';
+      contact = userDoc['contact'] ?? '';
+      address = userDoc['address'] ?? '';
 
-          setState(() {
-            email = userDoc['email'] ?? '';
-            password = userDoc['password'] ?? '';
-            supplierName = userDoc['supplierName'] ?? '';
-            contact = userDoc['contact'] ?? '';
-            address = userDoc['address'] ?? '';
-
-            emailController.text = email;
-            passwordController.text = password;
-            supplierNameController.text = supplierName;
-            contactController.text = contact;
-            addressController.text = address;
-          });
-        }
-      });
-    }
+      emailController.text = email;
+      passwordController.text = password;
+      supplierNameController.text = supplierName;
+      contactController.text = contact;
+      addressController.text = address;
+    });
   }
 
   @override
@@ -203,7 +196,13 @@ class _SPProfilePageState extends State<SPProfilePage> {
                   height: 50.0,
                   child: FloatingActionButton(
                     onPressed: () {
-                      updateProfile();
+                      _profileService.updateSPProfile(
+                        emailController.text,
+                        passwordController.text,
+                        supplierNameController.text,
+                        contactController.text,
+                        addressController.text,
+                      );
                     },
                     backgroundColor: Color.fromARGB(255, 90, 121, 141),
                     shape: RoundedRectangleBorder(
@@ -294,39 +293,5 @@ class _SPProfilePageState extends State<SPProfilePage> {
         ],
       ),
     );
-  }
-
-  Future<void> updateProfile() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final userId = user.uid;
-      final firestore = FirebaseFirestore.instance;
-
-      final updateEmail = emailController.text;
-      final updatePassword = passwordController.text;
-      final updatedSupplierName = supplierNameController.text;
-      final updatedContact = contactController.text;
-      final updatedAddress = addressController.text;
-
-      final userDocsQuery = firestore
-          .collection('suppliers')
-          .where('userId', isEqualTo: userId);
-
-      final userDocsSnapshot = await userDocsQuery.get();
-
-      if (userDocsSnapshot.docs.isNotEmpty) {
-        final userDocRef = userDocsSnapshot.docs[0].reference;
-
-        await userDocRef.update({
-          'email': updateEmail,
-          'password': updatePassword,
-          'supplierName': updatedSupplierName,
-          'contact': updatedContact,
-          'address': updatedAddress,
-        });
-      } else {
-        print('Error: Document for user does not exist.');
-      }
-    }
   }
 }

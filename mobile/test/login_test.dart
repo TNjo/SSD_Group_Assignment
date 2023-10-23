@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mobile/login_page.dart';
+import 'package:mobile/screens/login_page.dart';
 import 'package:mobile/main.dart';
 import 'package:mockito/mockito.dart'; // Replace with the actual import path for your code
 

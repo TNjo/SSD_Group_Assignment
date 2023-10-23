@@ -3,14 +3,14 @@ import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mobile/components/sp_navbar.dart';
 import 'package:mobile/components/sm_navbar.dart';
-import 'package:mobile/first_page.dart';
-import 'package:mobile/login_page.dart';
-import 'package:mobile/signup_page.dart';
-import 'package:mobile/sm_cartpage.dart';
-import 'package:mobile/sm_homepage.dart';
-import 'package:mobile/sm_orderspage.dart';
-import 'package:mobile/sm_profilepage.dart';
-import 'package:mobile/sp_profilepage.dart';
+import 'package:mobile/screens/first_page.dart';
+import 'package:mobile/screens/login_page.dart';
+import 'package:mobile/screens/signup_page.dart';
+import 'package:mobile/screens/sm_cartpage.dart';
+import 'package:mobile/screens/sm_homepage.dart';
+import 'package:mobile/screens/sm_orderspage.dart';
+import 'package:mobile/screens/sm_profilepage.dart';
+import 'package:mobile/screens/sp_profilepage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/services/order_services.dart';
 
 class ApprovedOrdersCard extends StatelessWidget {
   final Map<String, dynamic> userData;
-
+  final OrderServices orderServices = OrderServices();
   ApprovedOrdersCard({Key? key, required this.userData}) : super(key: key);
 
   String getStatusText(int status) {
@@ -28,9 +29,7 @@ class ApprovedOrdersCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final DateFormat dateFormat = DateFormat("MMM d, y");
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('orders')
-          .snapshots(),
+      stream: orderServices.getApprovedOrdersStream(userData),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final orders = snapshot.data!.docs.where((orderDoc) {

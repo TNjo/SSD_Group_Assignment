@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mobile/services/profile_services.dart';
 
 class SMProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -37,43 +35,37 @@ class _SMProfilePageState extends State<SMProfilePage> {
   bool siteNameEditMode = false;
   bool siteNumberEditMode = false;
 
-  @override
+  final ProfileService _profileService = ProfileService();
+
+@override
   void initState() {
-  super.initState();
-  // Initialize the TextEditingControllers and other variables with user data
-  final user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    final firestore = FirebaseFirestore.instance;
-
-    // Query the 'siteManagers' collection to find the document with the matching 'userId'
-    firestore.collection('siteManagers')
-      .where('userId', isEqualTo: user.uid)
-      .get()
-      .then((QuerySnapshot querySnapshot) {
-        if (querySnapshot.docs.isNotEmpty) {
-          final userDoc = querySnapshot.docs[0].data() as Map<String, dynamic>;
-          setState(() {
-            email = userDoc['email'] ?? '';
-            password = userDoc['password'] ?? '';
-            managerName = userDoc['managerName'] ?? '';
-            contact = userDoc['contact'] ?? '';
-            companyName = userDoc['companyName'] ?? '';
-            siteName = userDoc['siteName'] ?? '';
-            siteNumber = userDoc['siteNumber'] ?? '';
-
-            // Assign these values to your TextEditingControllers if needed
-            emailController.text = email;
-            passwordController.text = password;
-            managerNameController.text = managerName;
-            contactController.text = contact;
-            companyNameController.text = companyName;
-            siteNameController.text = siteName;
-            siteNumberController.text = siteNumber;
-          });
-        }
-      });
+    super.initState();
+    // Fetch user profile data and update the state
+    fetchUserProfileData();
   }
-}
+
+  Future<void> fetchUserProfileData() async {
+    final userDoc = await _profileService.fetchSMProfile();
+    setState(() {
+      email = userDoc['email'] ?? '';
+      password = userDoc['password'] ?? '';
+      managerName = userDoc['managerName'] ?? '';
+      contact = userDoc['contact'] ?? '';
+      companyName = userDoc['companyName'] ?? '';
+      siteName = userDoc['siteName'] ?? '';
+      siteNumber = userDoc['siteNumber'] ?? '';
+
+      // Assign these values to your TextEditingControllers if needed
+      emailController.text = email;
+      passwordController.text = password;
+      managerNameController.text = managerName;
+      contactController.text = contact;
+      companyNameController.text = companyName;
+      siteNameController.text = siteName;
+      siteNumberController.text = siteNumber;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,16 +148,11 @@ class _SMProfilePageState extends State<SMProfilePage> {
                       });
                     }, false),
                     buildEditableField(
-                      passwordController,
-                      'Password',
-                      passwordEditMode,
-                      () {
-                        setState(() {
-                          passwordEditMode = !passwordEditMode;
-                        });
-                      },
-                      true,
-                    ),
+                        passwordController, 'Password', passwordEditMode, () {
+                      setState(() {
+                        passwordEditMode = !passwordEditMode;
+                      });
+                    }, true),
                     buildEditableField(
                         contactController, 'Contact', contactEditMode, () {
                       setState(() {
@@ -207,7 +194,15 @@ class _SMProfilePageState extends State<SMProfilePage> {
                   height: 50.0,
                   child: FloatingActionButton(
                     onPressed: () {
-                      updateProfile();
+                      _profileService.updateSMProfile(
+                        emailController.text,
+                        passwordController.text,
+                        managerNameController.text,
+                        contactController.text,
+                        companyNameController.text,
+                        siteNameController.text,
+                        siteNumberController.text,
+                      );
                     },
                     backgroundColor: Color.fromARGB(255, 90, 121, 141),
                     shape: RoundedRectangleBorder(
@@ -299,71 +294,4 @@ class _SMProfilePageState extends State<SMProfilePage> {
       ),
     );
   }
-
-Future<void> updateProfile() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    final userId = user.uid;
-    final firestore = FirebaseFirestore.instance;
-
-    final updateEmail = emailController.text;
-    final updatePassword = passwordController.text;
-    final updatedManagerName = managerNameController.text;
-    final updatedContact = contactController.text;
-    final updatedCompanyName = companyNameController.text;
-    final updatedSiteName = siteNameController.text;
-    final updatedSiteNumber = siteNumberController.text;
-
-    if (updatedContact.length != 10) {
-      // Show an error toast message for an invalid contact number
-      Fluttertoast.showToast(
-        msg: "Contact number should contain exactly 10 numbers",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 5,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-      return; // Return to prevent further execution
-    }
-
-    // Query the documents based on the 'userId' field
-    final userDocsQuery = firestore
-        .collection('siteManagers')
-        .where('userId', isEqualTo: userId);
-
-    final userDocsSnapshot = await userDocsQuery.get();
-
-    if (userDocsSnapshot.docs.isNotEmpty) {
-      // Since userId is unique, there should be only one matching document
-      final userDocRef = userDocsSnapshot.docs[0].reference;
-
-      // Update the existing document with new data
-      await userDocRef.update({
-        'email': updateEmail,
-        'password': updatePassword,
-        'managerName': updatedManagerName,
-        'contact': updatedContact,
-        'companyName': updatedCompanyName,
-        'siteName': updatedSiteName,
-        'siteNumber': updatedSiteNumber,
-      });
-
-     Fluttertoast.showToast(
-      msg: "Profile updated successfully",
-      toastLength: Toast.LENGTH_SHORT, // You can adjust the duration as needed
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 3, // Duration for iOS
-      backgroundColor: Colors.green, // Background color of the toast
-      textColor: Colors.white, // Text color of the toast
-    );
-  } 
-    } else {
-      // Handle the case where no document matches the userId
-      print('Error: Document for user does not exist.');
-    }
-
-    // Optionally, you can update the local state or show a confirmation message.
-  }
 }
-

@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/sp_vieworder.dart';
+import 'package:mobile/screens/sp_vieworder.dart';
+import 'package:intl/intl.dart';
 
 class SPOrderCard extends StatelessWidget {
   final String orderId;
-  final String company;
-  final String siteManager;
-  final String siteAddress;
-  final String contact;
-  final String requestDate;
-  final List<String> items;
+  final String constructionSite;
+  final String date;
+  final String sitemanager;
+  final int status;
+  final List<Map<String, dynamic>> items; // Updated to accept a list of maps
   final double totalPrice;
 
   SPOrderCard({
     required this.orderId,
-    required this.company,
-    required this.siteManager,
-    required this.siteAddress,
-    required this.contact,
-    required this.requestDate,
+    required this.constructionSite,
+    required this.date,
     required this.items,
+    required this.sitemanager,
+    required this.status,
     required this.totalPrice,
   });
+
+  final DateFormat dateFormat = DateFormat("MMM d, y");
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class SPOrderCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Company Name: $company',
+                  'Construction Site: $constructionSite',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -46,8 +47,13 @@ class SPOrderCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8.0),
                 Text(
-                  'Site Address: $siteAddress',
+                  'Date: ${dateFormat.format(DateTime.parse(date))}',
                   style: TextStyle(fontSize: 14.0),
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  'Total Price: \$${totalPrice.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 16.0,),
                 ),
               ],
             ),
@@ -60,16 +66,14 @@ class SPOrderCard extends StatelessWidget {
               height: 30.0,
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigate to the SPViewOrder page and pass the data
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => SPViewOrder(
                         orderId: orderId,
-                        company: company,
-                        siteManager: siteManager,
-                        siteAddress: siteAddress,
-                        contact: contact,
-                        requestDate: requestDate,
+                        constructionSite: constructionSite,
+                        date: date,
+                        sitemanager: sitemanager,
+                        status: status,
                         items: items,
                         totalPrice: totalPrice,
                       ),
@@ -98,6 +102,5 @@ class SPOrderCard extends StatelessWidget {
     );
   }
 }
-
 
 

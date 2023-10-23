@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/services/order_services.dart';
 
 class PendingOrdersCard extends StatelessWidget {
   final Map<String, dynamic> userData;
+  final OrderServices orderServices = OrderServices();
 
   PendingOrdersCard({Key? key, required this.userData}) : super(key: key);
 
@@ -20,7 +22,7 @@ class PendingOrdersCard extends StatelessWidget {
       case 5:
         return 'Supplier Rejected';
       case 6:
-        return 'Manager Rejected';  
+        return 'Manager Rejected';
       default:
         return 'Unknown';
     }
@@ -42,19 +44,18 @@ class PendingOrdersCard extends StatelessWidget {
       case 5:
         return Colors.red; // Default color for Supplier Rejected
       case 6:
-        return Colors.red;  
+        return Colors.red;
       default:
         return Color.fromARGB(255, 0, 0, 0); // Default color for other statuses
     }
   }
 
 // Define the date format
-final DateFormat dateFormat = DateFormat("MMM d, y");
+  final DateFormat dateFormat = DateFormat("MMM d, y");
 
 // Function to show order details in a dialog
   Future<void> _showOrderDetailsDialog(
       BuildContext context, Map<String, dynamic> order) async {
-    
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -147,7 +148,7 @@ final DateFormat dateFormat = DateFormat("MMM d, y");
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('orders').snapshots(),
+      stream: orderServices.getPendingOrderStream(userData), // Use the getOrderStream from OrderServices
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final orders = snapshot.data!.docs.where((orderDoc) {
