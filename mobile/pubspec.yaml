@@ -34,6 +34,7 @@ dependencies:
   google_fonts: ^6.1.0 
   motion_tab_bar_v2: ^0.3.0
   searchbar_animation: any
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -43,6 +44,10 @@ dependencies:
   cloud_firestore: ^4.9.3
   firebase_core: ^2.17.0
   fluttertoast: ^8.2.2
+  mockito: ^5.4.2
+  flutter_gherkin: any  # Use the actual version number
+  gherkin: any
+
 
 dev_dependencies:
   flutter_test:
