@@ -197,6 +197,7 @@ class _SPProfilePageState extends State<SPProfilePage> {
                   child: FloatingActionButton(
                     onPressed: () {
                       _profileService.updateSPProfile(
+                        context,
                         emailController.text,
                         passwordController.text,
                         supplierNameController.text,
