@@ -141,6 +141,11 @@ function App() {
           <OrderDetails />,
         </ProtectedRoute>
     },
+    {
+      path: "mo",
+      element:
+          <OrderDetails />,
+    },
   ]);
   return (
     <AuthContext>

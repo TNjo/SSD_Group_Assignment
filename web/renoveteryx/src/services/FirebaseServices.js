@@ -110,8 +110,8 @@ export const fetchAllOrderData = async () => {
     return ordersData;
 }
 
-//fetch details of the site according to the location
-export const fetchSitesData = async (location) => {
+//fetch budget of the site according to the location
+export const fetchSiteBudget = async (location) => {
     const db = getFirestore(app);
     const siteData = collection(db, "sites");
 
@@ -126,8 +126,42 @@ export const fetchSitesData = async (location) => {
         // Extract the data from the first matching document
         const data = firstMatchingDoc.data();
         const firstLocation = data.location;
-        return firstLocation;
+        const firstBudget = data.budget;
+        return firstBudget;
     } else {
         return null; // No matching document found
     }
 }
+
+// Update the budget of a location by subtracting an amount
+export const updateSiteBudget = async (location, amountToSubtract) => {
+    const db = getFirestore(app);
+    const siteData = collection(db, "sites");
+
+    // Create a query with a 'where' clause to filter by 'location'
+    const q = query(siteData, where("location", "==", location));
+
+    // Execute the query and get the first matching document
+    const querySnapshot = await getDocs(q);
+    const firstMatchingDoc = querySnapshot.docs[0];
+
+    if (firstMatchingDoc) {
+        // Extract the data from the first matching document
+        const data = firstMatchingDoc.data();
+        const docId = firstMatchingDoc.id;
+
+        // Calculate the updated budget
+        const currentBudget = data.budget || 0;
+        const updatedBudget = currentBudget - amountToSubtract;
+
+        // Update the Firestore document with the new budget
+        const docRef = doc(db, "sites", docId);
+        await updateDoc(docRef, {
+            budget: updatedBudget,
+        });
+
+        console.log(`Budget updated for location '${location}'. New budget: ${updatedBudget}`);
+    } else {
+        console.log("No matching site details found for the specified location.");
+    }
+};
