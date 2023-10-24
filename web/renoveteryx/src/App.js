@@ -20,7 +20,7 @@ import AdminHome from "./pages/AdminHome";
 import MyOrders from "./pages/MyOrders";
 import SiteManagers from "./pages/SiteManagers";
 import Sites from "./pages/Sites";
-import AddSites from "./pages/AddSites";
+import AddSites from "./pages/AddSites/SiteForm";
 import AdminSuppliers from "./pages/AdminSuppliers";
 import AdminOrderDetails from "./pages/AdminOrderDetails";
 import PendingOrders from "./pages/PendingOrders";
