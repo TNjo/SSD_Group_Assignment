@@ -195,6 +195,7 @@ class _SMProfilePageState extends State<SMProfilePage> {
                   child: FloatingActionButton(
                     onPressed: () {
                       _profileService.updateSMProfile(
+                        context,
                         emailController.text,
                         passwordController.text,
                         managerNameController.text,

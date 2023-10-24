@@ -225,13 +225,13 @@ class _SignupPageState extends State<SignupPage> {
                       try {
                         final String email = emailController.text;
                         final String password = passwordController.text;
-
+                        final String reEnteredPassword = reEnterPasswordController.text;
                         // Use the SignupService to sign up
-                        await _signupService.signUp(
-                            email, password, selectedOption);
+                        await _signupService.signUp(context,
+                            email, password, reEnteredPassword,selectedOption);
 
                         // After successful sign-up, you can navigate to a different screen:
-                        Navigator.of(context).pushNamed('/login');
+                        // Navigator.of(context).pushNamed('/login');
 
                         // Clear the text fields after successful sign-up
                         emailController.clear();

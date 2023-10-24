@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class ProfileService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -25,61 +24,84 @@ class ProfileService {
     return {};
   }
 
+  Future<void> _showCustomDialog(
+      BuildContext context, String title, String message) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> updateSMProfile(
-      String email,
-      String password,
-      String managerName,
-      String contact,
-      String companyName,
-      String siteName,
-      String siteNumber) async {
+    BuildContext context,
+    String email,
+    String password,
+    String managerName,
+    String contact,
+    String companyName,
+    String siteName,
+    String siteNumber,
+  ) async {
     final user = _auth.currentUser;
     if (user != null) {
       final userId = user.uid;
-      if (contact.length != 10) {
-        // Show an error toast message for an invalid contact number
-        Fluttertoast.showToast(
-          msg: "Contact number should contain exactly 10 numbers",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 5,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-        return; // Return to prevent further execution
-      }
-      try {
-        final userDocsQuery = _firestore
-            .collection('siteManagers')
-            .where('userId', isEqualTo: userId);
 
-        final userDocsSnapshot = await userDocsQuery.get();
+      // Add validation for empty fields and contact number
+      if (email.isEmpty ||
+          password.isEmpty ||
+          managerName.isEmpty ||
+          contact.isEmpty ||
+          companyName.isEmpty ||
+          siteName.isEmpty ||
+          siteNumber.isEmpty) {
+        _showCustomDialog(context, 'Error', 'All fields must be filled.');
+      } else if (contact.length != 10) {
+        _showCustomDialog(
+            context, 'Error', 'Contact number must contain exactly 10 digits.');
+      } else {
+        try {
+          final userDocsQuery = _firestore
+              .collection('siteManagers')
+              .where('userId', isEqualTo: userId);
 
-        if (userDocsSnapshot.docs.isNotEmpty) {
-          final userDocRef = userDocsSnapshot.docs[0].reference;
-          await userDocRef.update({
-            'email': email,
-            'password': password,
-            'managerName': managerName,
-            'contact': contact,
-            'companyName': companyName,
-            'siteName': siteName,
-            'siteNumber': siteNumber,
-          });
-          Fluttertoast.showToast(
-            msg: "Profile updated successfully",
-            toastLength:
-                Toast.LENGTH_SHORT, // You can adjust the duration as needed
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 3, // Duration for iOS
-            backgroundColor: Colors.green, // Background color of the toast
-            textColor: Colors.white, // Text color of the toast
-          );
-        } else {
-          print('Error: Document for user does not exist.');
+          final userDocsSnapshot = await userDocsQuery.get();
+
+          if (userDocsSnapshot.docs.isNotEmpty) {
+            final userDocRef = userDocsSnapshot.docs[0].reference;
+
+            await userDocRef.update({
+              'email': email,
+              'password': password,
+              'managerName': managerName,
+              'contact': contact,
+              'companyName': companyName,
+              'siteName': siteName,
+              'siteNumber': siteNumber,
+            });
+            // Show success message
+            _showCustomDialog(context, 'Success', 'Profile updated successfully.');
+          } else {
+            print('Error: Document for user does not exist.');
+          }
+        } catch (e) {
+          print('Error during profile update: $e');
+
+          // Show error message
+          _showCustomDialog(context, 'Error', 'Failed to update profile.');
         }
-      } catch (e) {
-        print('Error during profile update: $e');
       }
     }
   }
@@ -103,6 +125,7 @@ class ProfileService {
   }
 
   Future<void> updateSPProfile(
+    BuildContext context,
     String email,
     String password,
     String supplierName,
@@ -113,28 +136,45 @@ class ProfileService {
     if (user != null) {
       final userId = user.uid;
 
-      try {
-        final userDocsQuery = _firestore
-            .collection('suppliers')
-            .where('userId', isEqualTo: userId);
+      // Add validation for empty fields and contact number
+      if (email.isEmpty ||
+          password.isEmpty ||
+          supplierName.isEmpty ||
+          contact.isEmpty ||
+          address.isEmpty) {
+        _showCustomDialog(context, 'Error', 'All fields must be filled.');
+      } else if (contact.length != 10) {
+        _showCustomDialog(
+            context, 'Error', 'Contact number must contain exactly 10 digits.');
+      } else {
+        try {
+          final userDocsQuery = _firestore
+              .collection('suppliers')
+              .where('userId', isEqualTo: userId);
 
-        final userDocsSnapshot = await userDocsQuery.get();
+          final userDocsSnapshot = await userDocsQuery.get();
 
-        if (userDocsSnapshot.docs.isNotEmpty) {
-          final userDocRef = userDocsSnapshot.docs[0].reference;
+          if (userDocsSnapshot.docs.isNotEmpty) {
+            final userDocRef = userDocsSnapshot.docs[0].reference;
 
-          await userDocRef.update({
-            'email': email,
-            'password': password,
-            'supplierName': supplierName,
-            'contact': contact,
-            'address': address,
-          });
-        } else {
-          print('Error: Document for user does not exist.');
+            await userDocRef.update({
+              'email': email,
+              'password': password,
+              'supplierName': supplierName,
+              'contact': contact,
+              'address': address,
+            });
+            // Show success message
+            _showCustomDialog(
+                context, 'Success', 'Profile updated successfully.');
+          } else {
+            print('Error: Document for user does not exist.');
+          }
+        } catch (e) {
+          print('Error during profile update: $e');
+          // Show error message
+          _showCustomDialog(context, 'Error', 'Failed to update profile.');
         }
-      } catch (e) {
-        print('Error during profile update: $e');
       }
     }
   }
