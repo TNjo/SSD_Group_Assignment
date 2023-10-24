@@ -10,33 +10,33 @@ import ToastContext from '../../Context/ToastContext';
 import progressBar from '../../components/progressBar';
 
 const OrderDetails = () => {
-
+    // Initialize variables and state
     const navigate = useNavigate();
     const { toast } = useContext(ToastContext);
     const [selectedSuppliers, setSelectedSuppliers] = useState({});
-    console.log(selectedSuppliers)
     const { docId } = useParams();
     const [orderData, setOrderData] = useState(null);
     const [suppliersData, setSuppliersData] = useState(null);
     const [siteBudget, setSiteBudget] = useState(null);
     const [overallTotal, setOverallTotal] = useState(0);
 
+    // Fetch data when the docId parameter changes
     useEffect(() => {
         fetchData();
     }, [docId]);
 
+    // Calculate and update the overall total whenever selectedSuppliers or orderData change
     useEffect(() => {
-        // Calculate and update the overall total whenever selectedSuppliers or orderData change
         if (selectedSuppliers && orderData) {
             const total = orderData.items.reduce((acc, item) => {
                 const rowTotal = calculateTotal(item);
                 return acc + rowTotal;
             }, 0);
             setOverallTotal(total);
-            console.log(total)
         }
     }, [selectedSuppliers, orderData]);
 
+    // Fetch order data and related data (suppliers and site budget)
     const fetchData = async () => {
         const orderData = await fetchOrderData(docId);
         const suppliersData = await fetchSupplierData();
@@ -47,16 +47,15 @@ const OrderDetails = () => {
 
             const siteBudget = await fetchSiteBudget(orderData.constructionSite);
             setSiteBudget(siteBudget);
-
-            console.log(siteBudget)
         }
     };
 
-
+    // Handle supplier change for an item
     const handleSupplierChange = (itemName, supplierData) => {
         setSelectedSuppliers({ ...selectedSuppliers, [itemName]: supplierData });
     };
 
+    // Calculate the total cost for an item based on selected supplier
     const calculateTotal = (item) => {
         if (selectedSuppliers[item.name] && selectedSuppliers[item.name].items) {
             const supplierItem = selectedSuppliers[item.name].items.find(
@@ -69,6 +68,7 @@ const OrderDetails = () => {
         return 0;
     };
 
+    // Send an item to a supplier or manager
     const sendToSupplierOrManager = (itemName, status) => {
         const item = orderData.items.find((i) => i.name === itemName);
         const selectedSupplier = selectedSuppliers[itemName];
@@ -94,11 +94,17 @@ const OrderDetails = () => {
 
             try {
                 console.log('Order to Supplier:', order);
+
+                // create new order partially to send relevant supplier or manager
                 createOrderDocument(order);
                 toast.success("Order item sent succesfully")
                 console.log('Order Item to Delete:', order.items[0].name);
+
+                //delete the item that send to relevent party from the main item list order
                 deleteItemFromOrder(order.items[0].name, docId);
                 toast.success("Order items deleted from list");
+
+                // after sending the order update the site budget
                 updateSiteBudget(orderData.constructionSite, overallTotal);
                 toast.success("Budget updated");
 

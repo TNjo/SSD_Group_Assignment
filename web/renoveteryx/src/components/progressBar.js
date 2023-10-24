@@ -3,7 +3,6 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const progressBar = (budget, overallTotal) => {
 
-    // const percentage = 6500;
     const percentage = overallTotal / budget * 100;
     const label = `${percentage.toFixed(2)}%`
 
