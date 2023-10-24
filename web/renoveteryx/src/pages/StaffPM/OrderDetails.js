@@ -3,11 +3,11 @@ import Table from 'react-bootstrap/Table';
 import Select from 'react-select';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format, fromUnixTime } from 'date-fns';
-import { fetchOrderData, fetchSupplierData, createOrderDocument, deleteItemFromOrder, fetchSitesData } from "../../services/FirebaseServices";
+import { fetchOrderData, fetchSupplierData, createOrderDocument, deleteItemFromOrder, fetchSiteBudget, updateSiteBudget } from "../../services/FirebaseServices";
 import { getStatusText } from "../../constants/getStatusText"
-import { progressBar } from "../../constants/progressBar";
 import { toast } from 'react-toastify';
 import ToastContext from '../../Context/ToastContext';
+import progressBar from '../../components/progressBar';
 
 const OrderDetails = () => {
 
@@ -18,10 +18,24 @@ const OrderDetails = () => {
     const { docId } = useParams();
     const [orderData, setOrderData] = useState(null);
     const [suppliersData, setSuppliersData] = useState(null);
+    const [siteBudget, setSiteBudget] = useState(null);
+    const [overallTotal, setOverallTotal] = useState(0);
 
     useEffect(() => {
         fetchData();
     }, [docId]);
+
+    useEffect(() => {
+        // Calculate and update the overall total whenever selectedSuppliers or orderData change
+        if (selectedSuppliers && orderData) {
+            const total = orderData.items.reduce((acc, item) => {
+                const rowTotal = calculateTotal(item);
+                return acc + rowTotal;
+            }, 0);
+            setOverallTotal(total);
+            console.log(total)
+        }
+    }, [selectedSuppliers, orderData]);
 
     const fetchData = async () => {
         const orderData = await fetchOrderData(docId);
@@ -30,6 +44,11 @@ const OrderDetails = () => {
         if (orderData && suppliersData) {
             setOrderData(orderData);
             setSuppliersData(suppliersData);
+
+            const siteBudget = await fetchSiteBudget(orderData.constructionSite);
+            setSiteBudget(siteBudget);
+
+            console.log(siteBudget)
         }
     };
 
@@ -79,7 +98,10 @@ const OrderDetails = () => {
                 toast.success("Order item sent succesfully")
                 console.log('Order Item to Delete:', order.items[0].name);
                 deleteItemFromOrder(order.items[0].name, docId);
-                toast.success("Order items deleted from list")
+                toast.success("Order items deleted from list");
+                updateSiteBudget(orderData.constructionSite, overallTotal);
+                toast.success("Budget updated");
+
 
                 // Update the orderData and selectedSuppliers states
                 setOrderData((prevOrderData) => {
@@ -92,10 +114,9 @@ const OrderDetails = () => {
                     }
                     return { ...prevOrderData, items: updatedItems };
                 });
-
                 setSelectedSuppliers({});
             } catch (error) {
-                console.log(error)
+                toast.error(`Error : ${error}`);
             }
 
         } else {
@@ -118,9 +139,10 @@ const OrderDetails = () => {
                                 <p><strong>Order ID:</strong> {orderData.orderid}</p>
                                 <p><strong>Site Manager:</strong> {orderData.sitemanager}</p>
                                 <p><strong>Status:</strong> {getStatusText(orderData.status)}</p>
+                                <p><strong>Budget:</strong> {siteBudget}</p>
                             </div>
                             <div>
-                                {progressBar()}
+                                {progressBar(siteBudget, overallTotal)}
                             </div>
                         </div>
                         <h2>Items</h2>
