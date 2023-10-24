@@ -11,12 +11,7 @@ const admin_sidebar_menu = [
     path: "/admin-sites",
     title: "Sites",
   },
-  {
-    id: 3,
-
-    path: "/admin-siteManagers",
-    title: "Site Managers",
-  },
+  
   {
     id: 4,
 
@@ -31,11 +26,23 @@ const admin_sidebar_menu = [
   },
   {
     id: 6,
+
+    path: "/admin-approvedOrders",
+    title: "Approved Orders",
+  },
+  {
+    id: 7,
+
+    path: "/admin-rejectedOrders",
+    title: "Rejected Orders",
+  },
+  {
+    id: 8,
     path: "/admin-myOrders",
     title: "My Orders",
   },
   {
-    id: 7,
+    id: 9,
     path: "/admin-Inquiry",
     title: "Raise Inquiry",
   },

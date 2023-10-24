@@ -14,6 +14,7 @@ function SiteForm() {
   });
 
   const [managerNames, setManagerNames] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchManagerNames = async () => {
@@ -24,22 +25,45 @@ function SiteForm() {
     fetchManagerNames();
   }, []);
 
+  const validateForm = () => {
+    const errors = {};
+
+    if (!siteData.id.trim()) {
+      errors.id = "ID is required";
+    }
+
+    if (!siteData.name.trim()) {
+      errors.name = "Name is required";
+    }
+
+    if (!siteData.location.trim()) {
+      errors.location = "Location is required";
+    }
+
+    if (!siteData.sitemanager) {
+      errors.sitemanager = "Site Manager is required";
+    }
+
+    if (siteData.budget <= 0) {
+      errors.budget = "Budget must be greater than 0";
+    }
+
+    setErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSiteData({ ...siteData, [name]: value });
+    // Clear the error message when the user starts typing
+    setErrors({ ...errors, [name]: null });
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !siteData.id ||
-      !siteData.name ||
-      !siteData.location ||
-      !siteData.sitemanager ||
-      !siteData.budget
-    ) {
-      toast.error("All fields are required");
+    if (!validateForm()) {
       return;
     }
 
@@ -47,6 +71,7 @@ function SiteForm() {
       const docId = await firebaseServices.addSiteData(siteData);
 
       toast.success("Site data added successfully");
+      console.log("Site data added successfully");
 
       setSiteData({
         id: "",
@@ -72,35 +97,44 @@ function SiteForm() {
             <input
               type="text"
               name="id"
+              data-testid="id-input" // Add data-testid attribute
               className="form-control"
               value={siteData.id}
               onChange={handleInputChange}
             />
+            {errors.id && <div className="text-danger">{errors.id}</div>}
           </div>
           <div className="mb-3">
             <label className="form-label">Name</label>
             <input
               type="text"
               name="name"
+              data-testid="name-input" // Add data-testid attribute
               className="form-control"
               value={siteData.name}
               onChange={handleInputChange}
             />
+            {errors.name && <div className="text-danger">{errors.name}</div>}
           </div>
           <div className="mb-3">
             <label className="form-label">Location</label>
             <input
               type="text"
               name="location"
+              data-testid="location-input" // Add data-testid attribute
               className="form-control"
               value={siteData.location}
               onChange={handleInputChange}
             />
+            {errors.location && (
+              <div className="text-danger">{errors.location}</div>
+            )}
           </div>
           <div className="mb-3">
             <label className="form-label">Site Manager</label>
             <select
               name="sitemanager"
+              data-testid="sitemanager-select" // Add data-testid attribute
               className="form-select"
               value={siteData.sitemanager}
               onChange={handleInputChange}
@@ -112,16 +146,23 @@ function SiteForm() {
                 </option>
               ))}
             </select>
+            {errors.sitemanager && (
+              <div className="text-danger">{errors.sitemanager}</div>
+            )}
           </div>
           <div className="mb-3">
             <label className="form-label">Budget</label>
             <input
               type="number"
               name="budget"
+              data-testid="budget-input" // Add data-testid attribute
               className="form-control"
               value={siteData.budget}
               onChange={handleInputChange}
             />
+            {errors.budget && (
+              <div className="text-danger">{errors.budget}</div>
+            )}
           </div>
           <button type="submit" className="btn btn-primary">
             Add Site
