@@ -30,6 +30,9 @@ import ProcurementManager from "./pages/StaffPM";
 import OrderDetails from "./pages/StaffPM/OrderDetails";
 import RiseInquiry from "./pages/RiseInquiry";
 import InquireDetails from "./pages/InquireDetails";
+import AdminApproveOrders from "./pages/AdminApprovedOrders";
+import AdminRejectOrders from "./pages/AdminRejectOrders";
+import AdminViewSupplierOrders from "./pages/AdminViewSupplierOrders";
 
 function App() {
   const router = createBrowserRouter([
@@ -135,17 +138,19 @@ function App() {
     },
     {
       path: "/pm",
-      element:
+      element: (
         <ProtectedRoute>
           <ProcurementManager />,
         </ProtectedRoute>
+      ),
     },
     {
       path: "/pm/:docId",
-      element:
+      element: (
         <ProtectedRoute>
           <OrderDetails />,
         </ProtectedRoute>
+      ),
     },
     {
       path: "/pm/:docId",
@@ -164,6 +169,30 @@ function App() {
       element: (
         <ProtectedRoute>
           <InquireDetails />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-approvedOrders",
+      element: (
+        <ProtectedRoute>
+          <AdminApproveOrders />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-rejectedOrders",
+      element: (
+        <ProtectedRoute>
+          <AdminRejectOrders />,
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin-ViewSupplierOrders/:orderId",
+      element: (
+        <ProtectedRoute>
+          <AdminViewSupplierOrders />,
         </ProtectedRoute>
       ),
     },

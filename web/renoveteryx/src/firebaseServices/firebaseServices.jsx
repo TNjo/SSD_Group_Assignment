@@ -5,6 +5,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
 
 import { app } from "../utils/fbconfig"; // Importing Firebase app configuration
@@ -80,3 +81,18 @@ export async function fetchSiteData() {
   const sitesData = sitesSnapshot.docs.map((doc) => doc.data()); // Extracting data from each document
   return sitesData; // Returning an array of site data
 }
+
+// Update the status of an order
+export const fetchOrderDetails = async (orderId) => {
+  const db = getFirestore(app);
+  const orderRef = doc(db, "orders", orderId);
+
+  const orderSnapshot = await getDoc(orderRef);
+
+  if (orderSnapshot.exists()) {
+    return orderSnapshot.data();
+  } else {
+    console.log("Order not found");
+    return null;
+  }
+};

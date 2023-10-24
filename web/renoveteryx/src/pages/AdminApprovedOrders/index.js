@@ -9,7 +9,7 @@ import {
 import { calculateRange, sliceData } from "../../utils/table-pagination";
 import "../styles.css";
 
-function MyOrders() {
+function AdminApproveOrders() {
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
@@ -23,7 +23,7 @@ function MyOrders() {
     try {
       const ordersData = await fetchOrders();
 
-      const filteredOrders = ordersData.filter((order) => order.status === 2);
+      const filteredOrders = ordersData.filter((order) => order.status === 4);
 
       setOrders(filteredOrders);
 
@@ -69,7 +69,7 @@ function MyOrders() {
 
       <div className="dashboard-content-container">
         <div className="dashboard-content-header">
-          <h2>Suppliers Pending Orders</h2>
+          <h2>Suppliers Approved Orders</h2>
           <div className="dashboard-content-search">
             <input
               type="text"
@@ -151,4 +151,4 @@ function MyOrders() {
   );
 }
 
-export default MyOrders;
+export default AdminApproveOrders;
