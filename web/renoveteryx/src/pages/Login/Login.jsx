@@ -1,7 +1,5 @@
-// src/pages/Login/Login.jsx
-
 import React, { useState, useEffect } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from "firebase/auth"; // Added setPersistence and browserSessionPersistence
 import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import "./loginStyle.css"; // Your existing styles
@@ -54,8 +52,14 @@ function Login() {
     const auth = getAuth();
 
     try {
+      // Set session persistence before login
+      await setPersistence(auth, browserSessionPersistence);
+      
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      // Set session cookie
+      document.cookie = `session=${userCredential._tokenResponse.refreshToken}; Secure; HttpOnly; SameSite=Strict;`;
 
       console.log("User signed in:", user);
       const emailDomain = user.email.split("@")[1];
