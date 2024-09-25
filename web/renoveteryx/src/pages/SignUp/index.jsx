@@ -9,9 +9,34 @@ function Signup() {
   const [error, setError] = useState(null); // Handle error messages
   const [success, setSuccess] = useState(null); // Handle success messages
 
-  async function handleSignUp(e) {
-    e.preventDefault();
-    const auth = getAuth(); // Initialize auth
+  // Function to validate email using regex
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Function to validate password strength
+  const isValidPassword = (password) => {
+    return password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password);
+  };
+
+  async function handleSignUp(event) {
+    event.preventDefault(); // Prevent page reload
+
+    // Password Input validation
+    if (!isValidPassword(password)) {
+      setError("Password must be at least 8 characters long and include a number and an uppercase letter.");
+      return;
+    }
+
+    // Email Input validation
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setError(""); // Clear any previous errors
+    const auth = getAuth(); // Initialize Firebase Auth
     const db = getFirestore(); // Initialize Firestore
 
     try {
@@ -27,7 +52,16 @@ function Signup() {
       setSuccess("User signed up successfully");
       console.log("User signed up:", user);
     } catch (error) {
-      setError(error.message); // Set error message
+      // Handle specific Firebase error codes
+      if (error.code === "auth/email-already-in-use") {
+        setError("An account with this email already exists. Please use a different email or login.");
+      } else if (error.code === "auth/invalid-email") {
+        setError("The email address is not valid. Please check and try again.");
+      } else if (error.code === "auth/weak-password") {
+        setError("The password is too weak. Please use a stronger password.");
+      } else {
+        setError("Failed to create account. Please try again.");
+      }
       console.error("Error signing up:", error);
     }
   }
