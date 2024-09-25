@@ -54,7 +54,7 @@ function ProtectedRoute({ children }) {
 
     // Clear session cookies and tokens
     function clearSessionCookies() {
-      document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "session=; expires=Thu, 01 Jan 1988 00:00:00 UTC; path=/;";
       // Clear other cookies if needed
     }
 
