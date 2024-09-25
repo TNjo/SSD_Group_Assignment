@@ -6,6 +6,7 @@ import { getStatusText } from "../../constants/getStatusText"
 import { fetchAllOrderData, handleDeleteOrder } from "../../services/FirebaseServices";
 import "../styles.css";
 import ToastContext from "../../Context/ToastContext";
+import DOMPurify from 'dompurify';
 
 function ProcurementManager() {
   
@@ -33,21 +34,41 @@ function ProcurementManager() {
   };
 
   // Search
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
-    if (event.target.value !== "") {
-      let searchResults = orders.filter(
-        (item) =>
-          item.sitemanager.toLowerCase().includes(search.toLowerCase()) ||
-          getStatusText(item.status).toLowerCase().includes(search.toLowerCase()) ||
-          item.constructionSite.toLowerCase().includes(search.toLowerCase())
-      );
-      setOrders(searchResults);
-    } else {
-      handleChangePage(1);
-      fetchData();
-    }
-  };
+  // const handleSearch = (event) => {
+  //   setSearch(event.target.value);
+  //   if (event.target.value !== "") {
+  //     let searchResults = orders.filter(
+  //       (item) =>
+  //         item.sitemanager.toLowerCase().includes(search.toLowerCase()) ||
+  //         getStatusText(item.status).toLowerCase().includes(search.toLowerCase()) ||
+  //         item.constructionSite.toLowerCase().includes(search.toLowerCase())
+  //     );
+  //     setOrders(searchResults);
+  //   } else {
+  //     handleChangePage(1);
+  //     fetchData();
+  //   }
+  // };
+
+
+const handleSearch = (event) => {
+  const sanitizedInput = DOMPurify.sanitize(event.target.value);
+  setSearch(sanitizedInput);
+
+  if (sanitizedInput !== "") {
+    let searchResults = orders.filter(
+      (item) =>
+        item.sitemanager.toLowerCase().includes(sanitizedInput.toLowerCase()) ||
+        getStatusText(item.status).toLowerCase().includes(sanitizedInput.toLowerCase()) ||
+        item.constructionSite.toLowerCase().includes(sanitizedInput.toLowerCase())
+    );
+    setOrders(searchResults);
+  } else {
+    handleChangePage(1);
+    fetchData();
+  }
+};
+
 
   // Change Page
   const handleChangePage = (newPage) => {
@@ -99,7 +120,7 @@ function ProcurementManager() {
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            {/* <tbody>
               {orders.map((order, index) => (
                 <tr key={order.id}>
                   <td>{index + 1}</td>
@@ -132,7 +153,47 @@ function ProcurementManager() {
                   </td>
                 </tr>
               ))}
-            </tbody>
+            </tbody> */}
+
+
+<tbody>
+  {orders.map((order, index) => (
+    <tr key={order.id}>
+      <td>{index + 1}</td>
+      <td dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(order.constructionSite) }} />
+      <td>{format(fromUnixTime(order.date.seconds), "MM/dd/yyyy HH:mm:ss")}</td>
+      <td dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(order.sitemanager) }} />
+      <td>{getStatusText(order.status)}</td>
+      <td dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(order.supplier) }} />
+      <td>{order.totalPrice}</td>
+      <td>{order.orderid}</td>
+      <td>
+        <ul>
+          {order.items.map((item, index) => (
+            <li key={index}>
+              {DOMPurify.sanitize(item.name)} - Quantity: {item.quantity}
+            </li>
+          ))}
+        </ul>
+      </td>
+      <td>
+        <Link to={`/pm/${order.id}`}>
+          <button className="btn btn-primary">View</button>
+        </Link>
+        <button
+          className="btn btn-danger"
+          onClick={() => deleteOrder(order.id)}
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+
+
+
           </table>
         ) : (
           <div className="dashboard-content-footer">

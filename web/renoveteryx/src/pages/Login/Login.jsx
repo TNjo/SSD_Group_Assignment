@@ -68,8 +68,9 @@ function Login() {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setFailedAttempts((prevAttempts) => prevAttempts + 1);
       alert(error.message);
+      setFailedAttempts((prevAttempts) => prevAttempts + 1);
+      
 
       // Lock out if too many failed attempts
       if (failedAttempts + 1 >= 5) {
