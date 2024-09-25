@@ -41,41 +41,47 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     // Ensure the CAPTCHA is completed
     if (!captchaToken) {
       setCaptchaError(true);
       return;
     }
-
+  
     // Check if the account is locked out
     if (lockoutActive) {
       alert(`Account locked. Please wait ${lockoutTime} seconds.`);
       return;
     }
-
+  
     try {
+      // Set persistence to session-based (The user will stay signed in only during the session)
+      await auth.setPersistence(getAuth().Auth.Persistence.SESSION);
+  
+      // Sign in the user
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
       // Fetch the role from Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const userData = userDoc.data();
       const userRole = userData?.role || "pmanager";
-
-
+  
+      // Set session cookies (Optional if using Firebase managed session cookies)
+      document.cookie = `session=${userCredential._tokenResponse.refreshToken}; Secure; HttpOnly; SameSite=Strict;`;
+  
       // Redirect based on role
       if (userRole === "admin") {
         navigate("/admin-home");
-      } else if(userRole === "pmanager"){
+      } else if (userRole === "pmanager") {
         navigate("/pm");
       }
-
+  
     } catch (error) {
       console.error("Login error:", error);
       setFailedAttempts((prevAttempts) => prevAttempts + 1);
       alert(error.message);
-
+  
       // Lock out if too many failed attempts
       if (failedAttempts + 1 >= 5) {
         setLockoutActive(true);
@@ -83,7 +89,7 @@ function Login() {
       }
     }
   };
-
+  
   return (
     <div className="background">
       <div className="login-container">
