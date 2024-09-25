@@ -1,4 +1,3 @@
-// src/pages/Login/Login.jsx
 
 import React, { useState, useEffect } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
@@ -128,3 +127,6 @@ function Login() {
 }
 
 export default Login;
+
+
+

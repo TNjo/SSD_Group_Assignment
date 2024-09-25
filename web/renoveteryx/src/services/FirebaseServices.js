@@ -182,3 +182,8 @@ export const updateSiteBudget = async (location, amountToSubtract) => {
     console.log("No matching site details found for the specified location.");
   }
 };
+
+
+
+
+
