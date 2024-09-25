@@ -20,7 +20,9 @@ import AdminHome from "./pages/AdminHome";
 import MyOrders from "./pages/MyOrders";
 import SiteManagers from "./pages/SiteManagers";
 import Sites from "./pages/Sites";
+import Sites2 from "./pages/Sites/Sites2";
 import AddSites from "./pages/AddSites/SiteForm";
+import AddSites2 from "./pages/AddSites/SiteForm2";
 import AdminSuppliers from "./pages/AdminSuppliers";
 import AdminOrderDetails from "./pages/AdminOrderDetails";
 import PendingOrders from "./pages/PendingOrders";
@@ -73,6 +75,7 @@ function App() {
       element: (
         <ProtectedRoute>
           <Sites />,
+          {/* <Sites2 />, */}
         </ProtectedRoute>
       ),
     },
@@ -105,6 +108,7 @@ function App() {
       element: (
         <ProtectedRoute>
           <AddSites />,
+          {/* <AddSites2 />, */}
         </ProtectedRoute>
       ),
     },

@@ -52,6 +52,7 @@ function Signup() {
       setSuccess("User signed up successfully");
       console.log("User signed up:", user);
     } catch (error) {
+      setSuccess("");
       // Handle specific Firebase error codes
       if (error.code === "auth/email-already-in-use") {
         setError("An account with this email already exists. Please use a different email or login.");
