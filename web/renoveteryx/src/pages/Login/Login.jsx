@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore"; // Firestore import
 import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-import "./loginStyle.css"; // Your existing styles
+import "./loginStyle.css"; 
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -16,6 +17,8 @@ function Login() {
   const [lockoutActive, setLockoutActive] = useState(false);
 
   const navigate = useNavigate();
+  const auth = getAuth();
+  const db = getFirestore();
 
   useEffect(() => {
     // Timer to reset the lockout
@@ -51,21 +54,23 @@ function Login() {
       return;
     }
 
-    const auth = getAuth();
-
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      console.log("User signed in:", user);
-      const emailDomain = user.email.split("@")[1];
+      // Fetch the role from Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = userDoc.data();
+      const userRole = userData?.role || "pmanager";
 
-      // Redirect based on email domain
-      if (emailDomain === "gmail.com") {
-        navigate("/pm");
-      } else if (emailDomain === "example.com") {
+
+      // Redirect based on role
+      if (userRole === "admin") {
         navigate("/admin-home");
+      } else if(userRole === "pmanager"){
+        navigate("/pm");
       }
+
     } catch (error) {
       console.error("Login error:", error);
       setFailedAttempts((prevAttempts) => prevAttempts + 1);
@@ -104,6 +109,7 @@ function Login() {
               required
             />
           </div>
+
           {/* Add reCAPTCHA */}
           <ReCAPTCHA
             sitekey="6Leq200qAAAAAC8J1uMY2HyC51LMwHZU4lOGhJSZ" // Replace with your actual site key
@@ -111,12 +117,14 @@ function Login() {
             onExpired={() => setCaptchaToken(null)}
           />
           {captchaError && <p style={{ color: "red" }}>Please complete the CAPTCHA verification.</p>}
+
           <button type="submit" className="submit" disabled={lockoutActive}>
             Sign in
           </button>
           {lockoutActive && (
             <p style={{ color: "red" }}>Too many failed attempts. Try again in {lockoutTime} seconds.</p>
           )}
+
           <p className="signup-link">
             No account? <a href="/signup">Sign up</a>
           </p>
