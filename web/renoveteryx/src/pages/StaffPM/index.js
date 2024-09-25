@@ -2,13 +2,16 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import { calculateRange, sliceData } from "../../utils/table-pagination";
 import { format, fromUnixTime } from "date-fns";
-import { getStatusText } from "../../constants/getStatusText"
-import { fetchAllOrderData, handleDeleteOrder } from "../../services/FirebaseServices";
+import { getStatusText } from "../../constants/getStatusText";
+import {
+  fetchAllOrderData,
+  handleDeleteOrder,
+} from "../../services/FirebaseServices";
 import "../styles.css";
 import ToastContext from "../../Context/ToastContext";
+import DOMPurify from "dompurify";
 
 function ProcurementManager() {
-  
   const { toast } = useContext(ToastContext);
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState([]);
@@ -32,15 +35,22 @@ function ProcurementManager() {
     }
   };
 
-  // Search
   const handleSearch = (event) => {
-    setSearch(event.target.value);
-    if (event.target.value !== "") {
+    const sanitizedInput = DOMPurify.sanitize(event.target.value);
+    setSearch(sanitizedInput);
+
+    if (sanitizedInput !== "") {
       let searchResults = orders.filter(
         (item) =>
-          item.sitemanager.toLowerCase().includes(search.toLowerCase()) ||
-          getStatusText(item.status).toLowerCase().includes(search.toLowerCase()) ||
-          item.constructionSite.toLowerCase().includes(search.toLowerCase())
+          item.sitemanager
+            .toLowerCase()
+            .includes(sanitizedInput.toLowerCase()) ||
+          getStatusText(item.status)
+            .toLowerCase()
+            .includes(sanitizedInput.toLowerCase()) ||
+          item.constructionSite
+            .toLowerCase()
+            .includes(sanitizedInput.toLowerCase())
       );
       setOrders(searchResults);
     } else {
@@ -103,18 +113,36 @@ function ProcurementManager() {
               {orders.map((order, index) => (
                 <tr key={order.id}>
                   <td>{index + 1}</td>
-                  <td>{order.constructionSite}</td>
-                  <td>{format(fromUnixTime(order.date.seconds), "MM/dd/yyyy HH:mm:ss")}</td>
-                  <td>{order.sitemanager}</td>
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(order.constructionSite),
+                    }}
+                  />
+                  <td>
+                    {format(
+                      fromUnixTime(order.date.seconds),
+                      "MM/dd/yyyy HH:mm:ss"
+                    )}
+                  </td>
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(order.sitemanager),
+                    }}
+                  />
                   <td>{getStatusText(order.status)}</td>
-                  <td>{order.supplier}</td>
+                  <td
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(order.supplier),
+                    }}
+                  />
                   <td>{order.totalPrice}</td>
                   <td>{order.orderid}</td>
                   <td>
                     <ul>
                       {order.items.map((item, index) => (
                         <li key={index}>
-                          {item.name} - Quantity: {item.quantity}
+                          {DOMPurify.sanitize(item.name)} - Quantity:{" "}
+                          {item.quantity}
                         </li>
                       ))}
                     </ul>
