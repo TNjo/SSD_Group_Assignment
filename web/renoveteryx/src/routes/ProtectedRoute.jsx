@@ -1,23 +1,26 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Context } from "../Context/AuthContext";
 import SideBar from "../components/Sidebar";
 import sidebar_menu from "../constants/sidebar-menu";
 import admin_sidebar_menu from "../constants/admin-sidebar-menu";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore"; // Import Firestore query methods
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore"; // Firestore query methods
+import { getAuth } from "firebase/auth"; // Firebase authentication methods
 
 function ProtectedRoute({ children }) {
   const { user } = useContext(Context);
   const [userRole, setUserRole] = useState(null); // Store the role from Firestore
   const [loading, setLoading] = useState(true); // Loading state to handle async calls
   const db = getFirestore();
+  const auth = getAuth();
+  const navigate = useNavigate(); // To redirect the user after logout
+  let inactivityTimeout; // Timeout for inactivity tracking
 
   useEffect(() => {
     // Fetch the user's role based on their email
     async function fetchUserRole() {
       if (user && user.email) {
         try {
-          // Query Firestore collection where email matches the logged-in user email
           const q = query(collection(db, "users"), where("email", "==", user.email));
           const querySnapshot = await getDocs(q);
 
@@ -39,9 +42,38 @@ function ProtectedRoute({ children }) {
       }
     }
 
-    fetchUserRole();
-  }, [user, db]);
+    // Inactivity Timeout Setup
+    function resetTimeout() {
+      clearTimeout(inactivityTimeout);
+      inactivityTimeout = setTimeout(() => {
+        auth.signOut(); // Sign out the user after inactivity
+        clearSessionCookies(); // Clear cookies after inactivity
+        navigate("/login"); // Redirect to login page after sign out
+      }, 15 * 60 * 1000); // 15 minutes of inactivity
+    }
 
+    // Clear session cookies and tokens
+    function clearSessionCookies() {
+      document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      // Clear other cookies if needed
+    }
+
+    // Attach event listeners for user activity
+    document.addEventListener("mousemove", resetTimeout);
+    document.addEventListener("keypress", resetTimeout);
+
+    // Initialize the timer
+    resetTimeout();
+
+    fetchUserRole();
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      document.removeEventListener("mousemove", resetTimeout);
+      document.removeEventListener("keypress", resetTimeout);
+      clearTimeout(inactivityTimeout); // Clear any remaining timeout
+    };
+  }, [user, db, auth, navigate]);
 
   // Redirect to login if the user is not authenticated or no email exists
   if (!user || !user.email) {
@@ -50,7 +82,7 @@ function ProtectedRoute({ children }) {
 
   // Wait for the role to load from Firestore
   if (loading) {
-    return <div>Loading...</div>; // Show a loading state while fetching user role
+    return <div>Loading...</div>;
   }
 
   // If userRole is null or invalid, redirect to login
@@ -65,7 +97,7 @@ function ProtectedRoute({ children }) {
   } else if (userRole === "pmanager") {
     selectedMenu = sidebar_menu; // Use the pmanager menu for Procurement Managers
   } else {
-    return <Navigate to="/login" replace />; // Redirect if the role is invalid
+    return <Navigate to="/login" replace />;
   }
 
   return (
@@ -75,4 +107,5 @@ function ProtectedRoute({ children }) {
     </div>
   );
 }
+
 export default ProtectedRoute;
