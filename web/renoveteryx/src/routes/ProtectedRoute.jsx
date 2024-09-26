@@ -4,8 +4,9 @@ import { Context } from "../Context/AuthContext";
 import SideBar from "../components/Sidebar";
 import sidebar_menu from "../constants/sidebar-menu";
 import admin_sidebar_menu from "../constants/admin-sidebar-menu";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore"; // Firestore query methods
+import { getFirestore, collection, query, where, getDocs, addDoc } from "firebase/firestore"; // Firestore methods
 import { getAuth } from "firebase/auth"; // Firebase authentication methods
+import { getAnalytics, logEvent } from "firebase/analytics"; // Firebase Analytics
 
 function ProtectedRoute({ children }) {
   const { user } = useContext(Context);
@@ -13,6 +14,7 @@ function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true); // Loading state to handle async calls
   const db = getFirestore();
   const auth = getAuth();
+  const analytics = getAnalytics(); // Initialize Firebase Analytics
   const navigate = useNavigate(); // To redirect the user after logout
   let inactivityTimeout; // Timeout for inactivity tracking
 
@@ -45,11 +47,34 @@ function ProtectedRoute({ children }) {
     // Inactivity Timeout Setup
     function resetTimeout() {
       clearTimeout(inactivityTimeout);
-      inactivityTimeout = setTimeout(() => {
+      inactivityTimeout = setTimeout(async () => {
+        await logInactivity(); // Log the inactivity event to Firestore and Analytics
         auth.signOut(); // Sign out the user after inactivity
         clearSessionCookies(); // Clear cookies after inactivity
         navigate("/login"); // Redirect to login page after sign out
       }, 15 * 60 * 1000); // 15 minutes of inactivity
+    }
+
+    // Logging inactivity timeout to Firestore and Firebase Analytics
+    async function logInactivity() {
+      try {
+        // Log the inactivity event to Firestore
+        await addDoc(collection(db, "userActivityLogs"), {
+          email: user.email,
+          event: "inactivity_timeout",
+          timestamp: new Date(),
+        });
+
+        // Log the event to Firebase Analytics
+        logEvent(analytics, 'inactivity_timeout', {
+          email: user.email,
+          time: new Date().toISOString(),
+        });
+
+        console.log("Inactivity timeout logged successfully.");
+      } catch (error) {
+        console.error("Failed to log inactivity:", error);
+      }
     }
 
     // Clear session cookies and tokens
@@ -73,7 +98,7 @@ function ProtectedRoute({ children }) {
       document.removeEventListener("keypress", resetTimeout);
       clearTimeout(inactivityTimeout); // Clear any remaining timeout
     };
-  }, [user, db, auth, navigate]);
+  }, [user, db, auth, analytics, navigate]);
 
   // Redirect to login if the user is not authenticated or no email exists
   if (!user || !user.email) {
