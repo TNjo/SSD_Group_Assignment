@@ -1,213 +1,10 @@
-// import React, { useState, useEffect } from "react";
-// import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-// import { getFirestore, doc, getDoc } from "firebase/firestore"; // Firestore import
-// import { useNavigate } from "react-router-dom";
-// import ReCAPTCHA from "react-google-recaptcha";
-// import emailjs from "emailjs-com";
-// import "./loginStyle.css";
-// import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-
- 
-// function Login() {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [captchaToken, setCaptchaToken] = useState(null);
-//   const [captchaError, setCaptchaError] = useState(false);
-//   const [failedAttempts, setFailedAttempts] = useState(0);
-//   const [lockoutTime, setLockoutTime] = useState(0);
-//   const [lockoutActive, setLockoutActive] = useState(false);
-//   const [verificationCode, setVerificationCode] = useState("");
-//   const [sentVerificationCode, setSentVerificationCode] = useState(null);
-//   const [verificationStep, setVerificationStep] = useState(false); // For 2-step verification
-//   const [verificationError, setVerificationError] = useState(false);
- 
-//   const navigate = useNavigate();
-//   const auth = getAuth();
-//   const db = getFirestore();
- 
-//   useEffect(() => {
-//     let timer;
-//     if (lockoutActive && lockoutTime > 0) {
-//       timer = setInterval(() => {
-//         setLockoutTime((prevTime) => prevTime - 1);
-//       }, 1000);
-//     } else if (lockoutTime === 0) {
-//       setLockoutActive(false);
-//       setFailedAttempts(0);
-//     }
-//     return () => clearInterval(timer);
-//   }, [lockoutActive, lockoutTime]);
- 
-//   const handleCaptcha = (token) => {
-//     setCaptchaToken(token);
-//     setCaptchaError(false);
-//   };
- 
-//   // Function to generate a random verification code
-//   const generateVerificationCode = () => {
-//     return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit code
-//   };
- 
-//   // Function to send the verification code via EmailJS
-//   const sendVerificationCode = (email, code) => {
-//     const templateParams = {
-//       to_email: email,
-//       verificationCode: code,
-//     };
- 
-//     emailjs
-//       .send(
-//         "service_6fiu4br", // Replace with your EmailJS Service ID
-//         "template_9z1ykku", // Replace with your EmailJS Template ID
-//         templateParams,
-//         "lQRpj0D8qILcylxwq" // Replace with your EmailJS User ID
-//       )
-//       .then(
-//         (response) => {
-//           console.log("Verification code sent successfully", response.status, response.text);
-//         },
-//         (err) => {
-//           console.error("Failed to send verification code:", err);
-//         }
-//       );
-//   };
- 
-//   const handleLogin = async (e) => {
-//     e.preventDefault();
- 
-//     if (!captchaToken) {
-//       setCaptchaError(true);
-//       return;
-//     }
- 
-//     if (lockoutActive) {
-//       alert(`Account locked. Please wait ${lockoutTime} seconds.`);
-//       return;
-//     }
- 
-//     try {
-//        // Set persistence to session-based (The user will stay signed in only during the session)
-//        await auth.setPersistence(getAuth().Auth.Persistence.SESSION);
-
-//       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-//       const user = userCredential.user;
- 
-//       // Fetch the role from Firestore
-//       const userDoc = await getDoc(doc(db, "users", user.uid));
-//       const userData = userDoc.data();
-//       const userRole = userData?.role || "pmanager";
-
-//       // Set session cookies (Optional if using Firebase managed session cookies)
-//       document.cookie = `session=${userCredential._tokenResponse.refreshToken}; Secure; HttpOnly; SameSite=Strict;`;
- 
-//       // If user is an admin, initiate 2-step verification
-//       if (userRole === "admin") {
-//         const code = generateVerificationCode();
-//         setSentVerificationCode(code);
-//         setVerificationStep(true); // Move to verification step
-//         sendVerificationCode(email, code); // Send the verification code to the admin's email
-//       } else if (userRole === "pmanager") {
-//         navigate("/pm");
-//       }
-//     } catch (error) {
-//       console.error("Login error:", error);
-//       setFailedAttempts((prevAttempts) => prevAttempts + 1);
-//       alert(error.message);
- 
-//       if (failedAttempts + 1 >= 5) {
-//         setLockoutActive(true);
-//         setLockoutTime(30); // Lockout for 30 seconds
-//       }
-//     }
-//   };
- 
-//   const handleVerification = (e) => {
-//     e.preventDefault();
-//     if (verificationCode === sentVerificationCode) {
-//       navigate("/admin-home"); // Successful verification for admin
-//     } else {
-//       setVerificationError(true);
-//     }
-//   };
- 
-//   return (
-//     <div className="background">
-//       <div className="login-container">
-//         {!verificationStep ? (
-//           <form className="form" onSubmit={handleLogin}>
-//             <p className="form-title">Login In To Your Account</p>
-//             <div className="input-container">
-//               <label>Email:</label>
-//               <input
-//                 type="email"
-//                 placeholder="Enter email"
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//                 required
-//               />
-//             </div>
-//             <div className="input-container">
-//               <label>Password:</label>
-//               <input
-//                 type="password"
-//                 placeholder="Enter password"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//                 required
-//               />
-//             </div>
- 
-//             <ReCAPTCHA
-//               sitekey="6Leq200qAAAAAC8J1uMY2HyC51LMwHZU4lOGhJSZ"
-//               onChange={handleCaptcha}
-//               onExpired={() => setCaptchaToken(null)}
-//             />
-//             {captchaError && <p style={{ color: "red" }}>Please complete the CAPTCHA verification.</p>}
- 
-//             <button type="submit" className="submit" disabled={lockoutActive}>
-//               Sign in
-//             </button>
-//             {lockoutActive && (
-//               <p style={{ color: "red" }}>Too many failed attempts. Try again in {lockoutTime} seconds.</p>
-//             )}
- 
-//             <p className="signup-link">
-//               No account? <a href="/signup">Sign up</a>
-//             </p>
-//           </form>
-//         ) : (
-//           <form className="form" onSubmit={handleVerification}>
-//             <p className="form-title">Enter Verification Code</p>
-//             <div className="input-container">
-//               <label>Verification Code:</label>
-//               <input
-//                 type="text"
-//                 placeholder="Enter verification code"
-//                 value={verificationCode}
-//                 onChange={(e) => setVerificationCode(e.target.value)}
-//                 required
-//               />
-//             </div>
-//             {verificationError && <p style={{ color: "red" }}>Invalid verification code. Try again.</p>}
-//             <button type="submit" className="submit">
-//               Verify
-//             </button>
-//           </form>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
- 
-// export default Login;
-
-
 import React, { useState, useEffect } from "react";
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, getDoc } from "firebase/firestore"; // Added addDoc for Firestore logging
 import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import emailjs from "emailjs-com";
+import { getAnalytics, logEvent } from "firebase/analytics"; // Import Firebase Analytics
 import "./loginStyle.css";
 
 function Login() {
@@ -226,6 +23,9 @@ function Login() {
   const navigate = useNavigate();
   const auth = getAuth();
   const db = getFirestore();
+  const analytics = getAnalytics(); // Initialize Analytics
+  const siteKey = String(process.env.REACT_APP_RECAPTCHA_SITE_KEY)
+  console.log(siteKey)
 
   useEffect(() => {
     let timer;
@@ -243,6 +43,7 @@ function Login() {
   const handleCaptcha = (token) => {
     setCaptchaToken(token);
     setCaptchaError(false);
+    logEvent(analytics, 'captcha_completed'); // Log CAPTCHA completion
   };
 
   const generateVerificationCode = () => {
@@ -257,14 +58,15 @@ function Login() {
 
     emailjs
       .send(
-        "service_6fiu4br", 
-        "template_9z1ykku", 
+        "service_6fiu4br",
+        "template_9z1ykku",
         templateParams,
-        "lQRpj0D8qILcylxwq" 
+        "lQRpj0D8qILcylxwq"
       )
       .then(
         (response) => {
           console.log("Verification code sent successfully", response.status, response.text);
+          logEvent(analytics, 'verification_code_sent', { email }); // Log code sent
         },
         (err) => {
           console.error("Failed to send verification code:", err);
@@ -272,11 +74,20 @@ function Login() {
       );
   };
 
+  const logToFirestore = async (logData) => {
+    try {
+      await addDoc(collection(db, "loginLogs"), logData);
+    } catch (error) {
+      console.error("Failed to log to Firestore:", error);
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!captchaToken) {
       setCaptchaError(true);
+      logEvent(analytics, 'captcha_failed'); // Log CAPTCHA failure
       return;
     }
 
@@ -286,8 +97,6 @@ function Login() {
     }
 
     try {
-      //await auth.setPersistence(getAuth().Auth.Persistence.SESSION);
-
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
@@ -296,6 +105,15 @@ function Login() {
       const userRole = userData?.role || "pmanager";
 
       document.cookie = `session=${userCredential._tokenResponse.refreshToken}; Secure; HttpOnly; SameSite=Strict;`;
+
+      // Log successful login to Firestore
+      await logToFirestore({
+        email: user.email,
+        loginTime: new Date(),
+        status: "success",
+        method: "email_password",
+      });
+      logEvent(analytics, 'login', { method: 'email_password', email: user.email }); // Log to Analytics
 
       if (userRole === "admin") {
         const code = generateVerificationCode();
@@ -309,6 +127,15 @@ function Login() {
       console.error("Login error:", error);
       setFailedAttempts((prevAttempts) => prevAttempts + 1);
       alert(error.message);
+
+      // Log failed login attempt to Firestore
+      await logToFirestore({
+        email,
+        loginTime: new Date(),
+        status: "failed",
+        errorMessage: error.message,
+      });
+      logEvent(analytics, 'login_failed', { method: 'email_password', email, errorMessage: error.message }); // Log to Analytics
 
       if (failedAttempts + 1 >= 5) {
         setLockoutActive(true);
@@ -328,6 +155,15 @@ function Login() {
       const userData = userDoc.data();
       const userRole = userData?.role || "pmanager";
 
+      // Log successful Google login to Firestore
+      await logToFirestore({
+        email: user.email,
+        loginTime: new Date(),
+        status: "success",
+        method: "google",
+      });
+      logEvent(analytics, 'login', { method: 'google', email: user.email }); // Log to Analytics
+
       if (userRole === "admin") {
         navigate("/admin-home");
       } else if (userRole === "pmanager") {
@@ -336,6 +172,15 @@ function Login() {
     } catch (error) {
       console.error("Google login error:", error);
       alert(error.message);
+
+      // Log failed Google login attempt to Firestore
+      await logToFirestore({
+        email: email || "unknown",
+        loginTime: new Date(),
+        status: "failed",
+        errorMessage: error.message,
+      });
+      logEvent(analytics, 'login_failed', { method: 'google', email: email || "unknown", errorMessage: error.message }); // Log to Analytics
     }
   };
 
@@ -343,8 +188,10 @@ function Login() {
     e.preventDefault();
     if (verificationCode === sentVerificationCode) {
       navigate("/admin-home");
+      logEvent(analytics, 'verification_success', { email }); // Log verification success
     } else {
       setVerificationError(true);
+      logEvent(analytics, 'verification_failed', { email }); // Log verification failure
     }
   };
 
@@ -376,7 +223,7 @@ function Login() {
             </div>
 
             <ReCAPTCHA
-              sitekey="6Leq200qAAAAAC8J1uMY2HyC51LMwHZU4lOGhJSZ"
+              sitekey={siteKey}
               onChange={handleCaptcha}
               onExpired={() => setCaptchaToken(null)}
             />
@@ -384,6 +231,9 @@ function Login() {
 
             <button type="submit" className="submit" disabled={lockoutActive}>
               Sign in
+            </button>
+            <button type="button" className="submit" onClick={handleGoogleLogin}>
+              Sign in with Google
             </button>
             {lockoutActive && (
               <p style={{ color: "red" }}>Too many failed attempts. Try again in {lockoutTime} seconds.</p>
@@ -406,19 +256,14 @@ function Login() {
                 required
               />
             </div>
-            {verificationError && <p style={{ color: "red" }}>Invalid verification code. Try again.</p>}
             <button type="submit" className="submit">
               Verify
             </button>
+            {verificationError && (
+              <p style={{ color: "red" }}>Invalid verification code. Please try again.</p>
+            )}
           </form>
         )}
-
-        {/* Add Google Login Button */}
-        <div className="google-login">
-          <button onClick={handleGoogleLogin} className="google-login-button">
-            Sign in with Google
-          </button>
-        </div>
       </div>
     </div>
   );
