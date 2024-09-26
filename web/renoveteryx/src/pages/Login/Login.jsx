@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore, collection, addDoc, doc, getDoc } from "firebase/firestore"; // Added addDoc for Firestore logging
+import { getFirestore, collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import emailjs from "emailjs-com";
-import { getAnalytics, logEvent } from "firebase/analytics"; // Import Firebase Analytics
+import { getAnalytics, logEvent } from "firebase/analytics";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./loginStyle.css";
 
 function Login() {
@@ -25,7 +27,6 @@ function Login() {
   const db = getFirestore();
   const analytics = getAnalytics(); // Initialize Analytics
   const siteKey = String(process.env.REACT_APP_RECAPTCHA_SITE_KEY)
-  console.log(siteKey)
 
   useEffect(() => {
     let timer;
@@ -115,6 +116,9 @@ function Login() {
       });
       logEvent(analytics, 'login', { method: 'email_password', email: user.email }); // Log to Analytics
 
+      // Show a success toast
+      toast.success("Login successful!");
+
       if (userRole === "admin") {
         const code = generateVerificationCode();
         setSentVerificationCode(code);
@@ -163,6 +167,9 @@ function Login() {
         method: "google",
       });
       logEvent(analytics, 'login', { method: 'google', email: user.email }); // Log to Analytics
+      
+      // Show a success toast
+      toast.success("Google login successful!");
 
       if (userRole === "admin") {
         navigate("/admin-home");
@@ -198,6 +205,7 @@ function Login() {
   return (
     <div className="background">
       <div className="login-container">
+        <ToastContainer />
         {!verificationStep ? (
           <form className="form" onSubmit={handleLogin}>
             <p className="form-title">Login In To Your Account</p>
@@ -256,12 +264,10 @@ function Login() {
                 required
               />
             </div>
+            {verificationError && <p style={{ color: "red" }}>Verification code is incorrect.</p>}
             <button type="submit" className="submit">
               Verify
             </button>
-            {verificationError && (
-              <p style={{ color: "red" }}>Invalid verification code. Please try again.</p>
-            )}
           </form>
         )}
       </div>
